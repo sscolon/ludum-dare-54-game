@@ -1,4 +1,5 @@
 using DDCore;
+using ProjectBubble.Core;
 using ProjectBubble.Core.Combat;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,6 +18,9 @@ namespace ProjectBubble.MainPlayer
         [SerializeField] private float _movementSpeed;
         [SerializeField] private float _acceleration;
         [SerializeField] private float _deceleration;
+
+        [Header("Scoring")]
+        [SerializeField] private float _damagePenalty;
 
         private void Start()
         {
@@ -80,6 +84,10 @@ namespace ProjectBubble.MainPlayer
             }
         }
 
-
+        public override void TakeDamage(float damage)
+        {
+            base.TakeDamage(damage);
+            ScoreManager.ModifyScore(_damagePenalty);
+        }
     }
 }
