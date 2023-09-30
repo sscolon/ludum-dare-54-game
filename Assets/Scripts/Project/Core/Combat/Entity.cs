@@ -44,5 +44,6 @@ namespace ProjectBubble.Core.Combat
             //We can put VFX and stuff here later.
             OnDeath?.Invoke();
         }
+
     }
 }
