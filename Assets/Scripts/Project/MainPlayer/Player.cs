@@ -13,12 +13,15 @@ namespace ProjectBubble.MainPlayer
     public class Player : Entity,
         ICollector
     {
+        private List<Bubble> _orbitingBubbles;
         private Queue<BubbleData> _bubbleQueue;
         private Rigidbody2D _rb2D;
         private Coroutine _tauntRoutine;
         private float _inputX;
         private float _inputY;
- 
+        private float _elapsedIdleTime;
+        private float _deltaOffset;
+
         private Dictionary<int, int> _collectibleIndex;
         [SerializeField] private BubbleData _starterBubble;
         [SerializeField] private float _movementSpeed;
@@ -32,6 +35,7 @@ namespace ProjectBubble.MainPlayer
         [SerializeField] private float _collectRadius = 1;
 
         [Header("VFX")]
+        [SerializeField] private Transform _idleTransform;
         [SerializeField] private Transform _tauntTransform;
         [SerializeField] private Transform _flipperTransform;
 
@@ -40,6 +44,7 @@ namespace ProjectBubble.MainPlayer
         public event Action<Dictionary<int, int>> OnCollect;
         private void Start()
         {
+            _orbitingBubbles = new();
             _collectibleIndex = new();
             _bubbleQueue = new();
             _bubbleQueue.Enqueue(_starterBubble);
@@ -50,16 +55,10 @@ namespace ProjectBubble.MainPlayer
         {
             _inputX = Input.GetAxisRaw("Horizontal");
             _inputY = Input.GetAxisRaw("Vertical");
-            Vector3 mouseWorld = Util.GetMouseWorldPosition();
-            if(mouseWorld.x < transform.position.x)
-            {
-                _flipperTransform.localScale = new Vector3(-1f, 1f, 1f);
-            }
-            else
-            {
-                _flipperTransform.localScale = Vector3.one;
-            }
 
+            SetIdleScale();
+            SetFlipperScale();
+            SetOrbitingBubblePositions();
             if (Input.GetMouseButtonDown(0))
             {
                 NextBubble();
@@ -81,14 +80,48 @@ namespace ProjectBubble.MainPlayer
 
             //Just call it every frame, overlap circle isn't expensive anyway.
             Collect();
-           
         }
 
+        private void SetOrbitingBubblePositions()
+        {
+            const float Orbiting_Speed = 90;
+            const float Orbiting_Radius = 1.5f;
+            _deltaOffset += Time.deltaTime * Orbiting_Speed;
+            for(int i = 0; i < _orbitingBubbles.Count; i++)
+            {
+                Bubble bubble = _orbitingBubbles[i];
+                float angle = i * (360f / _orbitingBubbles.Count);
+                Vector3 direction = Quaternion.Euler(0, 0, angle + _deltaOffset) * Vector3.up;
+                Vector3 position = transform.position + direction * Orbiting_Radius;
+                bubble.TargetPosition = position;
+            }
+        }
+
+        private void SetIdleScale()
+        {
+            _elapsedIdleTime += Time.deltaTime;
+            float pingPong = Mathf.PingPong(_elapsedIdleTime, 1);
+            float easedPingPong = Easing.Calculate(pingPong, EaseType.In_Out_Cubic);
+            _idleTransform.localScale = Vector3.Lerp(Vector3.one, new Vector3(1.1f, 0.9f, 1f), easedPingPong);
+        }
+
+        private void SetFlipperScale()
+        {
+            Vector3 mouseWorld = Util.GetMouseWorldPosition();
+            if (mouseWorld.x < transform.position.x)
+            {
+                _flipperTransform.localScale = new Vector3(-1f, 1f, 1f);
+            }
+            else
+            {
+                _flipperTransform.localScale = Vector3.one;
+            }
+        }
         private IEnumerator Taunt()
         {
             const float Taunt_Speed = 3f;
             float elapsedTime = 0f;
-            while(elapsedTime < 1f)
+            while (elapsedTime < 1f)
             {
                 elapsedTime += Time.deltaTime * Taunt_Speed;
                 float easedTime = Easing.Calculate(elapsedTime, EaseType.Out_Cubic);
@@ -104,12 +137,12 @@ namespace ProjectBubble.MainPlayer
         private void Collect()
         {
             Collider2D[] collisions = Physics2D.OverlapCircleAll(transform.position, _collectRadius);
-            for(int i = 0; i < collisions.Length; i++)
+            for (int i = 0; i < collisions.Length; i++)
             {
                 Collider2D collision = collisions[i];
                 if (collision.gameObject == gameObject)
                     continue;
-                if(collision.gameObject.TryGetComponent(out ICollectible collectible) && collectible.CanCollect(gameObject, _collectibleIndex))
+                if (collision.gameObject.TryGetComponent(out ICollectible collectible) && collectible.CanCollect(gameObject, _collectibleIndex))
                 {
                     collectible.Collect(gameObject, _collectibleIndex);
                     OnCollect?.Invoke(_collectibleIndex);
@@ -137,7 +170,7 @@ namespace ProjectBubble.MainPlayer
 
             GameObject instance = Instantiate(bubbleData.prefab, transform.position, bubbleData.prefab.transform.rotation);
             Bubble bubble = instance.GetComponent<Bubble>();
-            if(bubble == null)
+            if (bubble == null)
             {
                 DebugWrapper.LogError("You forgot to add the bubble reference, IDIOT!");
                 return;
@@ -146,22 +179,24 @@ namespace ProjectBubble.MainPlayer
             Vector3 mouseWorld = Util.GetMouseWorldPosition();
             if (bubbleData.HasData())
             {
-                bubble.Fire(bubbleData, Bubble.Type.Release, mouseWorld);
+                bubble.Fire(bubbleData, Bubble.Type.Release, mouseWorld, transform);
                 bubble.OnRelease += Release;
                 void Release(BubbleData bubbleData)
                 {
                     bubble.OnRelease -= Release;
+                    _orbitingBubbles.Remove(bubble);
                     _bubbleQueue.Enqueue(bubbleData);
                     OnQueue?.Invoke(bubbleData);
                 }
             }
             else
             {
-                bubble.Fire(bubbleData, Bubble.Type.Catch, mouseWorld);
+                bubble.Fire(bubbleData, Bubble.Type.Catch, mouseWorld, transform);
                 bubble.OnCatch += Catch;
                 void Catch(BubbleData bubbleData)
                 {
                     bubble.OnCatch -= Catch;
+                    _orbitingBubbles.Add(bubble);
                     _bubbleQueue.Enqueue(bubbleData);
                     OnQueue?.Invoke(bubbleData);
                 }

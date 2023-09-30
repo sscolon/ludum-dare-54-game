@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,17 +9,25 @@ namespace ProjectBubble.Core.Combat
 {
     public class Bubble : MonoBehaviour
     {
-        private const float START_SCALE = 0.2f;
+        private const float START_SCALE = 0.4f;
+        private const float END_SCALE = 1f;
+
+        private bool _hasDied;
+        private float _travelTime;
+
+        private Type _type;
+        private Movement _movement;
+        private Vector2 _startPosition;
+
         private Collider2D _collider2D;
         private BubbleData _bubbleData;
-        private float _travelTime;
-        private Vector2 _startPosition;
-        private Vector2 _targetPosition;
-        private Type _type;
+        private Transform _shooter;
 
         [SerializeField] private float _movementSpeed;
         [SerializeField] private float _bubbleReleaseDamage;
         [SerializeField] private float _bubbleBurstDamage;
+        [SerializeField] private SpriteRenderer _screenshotRenderer;
+        public Vector2 TargetPosition { get; set; }
 
         public event Action<BubbleData> OnCatch;
         public event Action<BubbleData> OnRelease;
@@ -32,33 +41,67 @@ namespace ProjectBubble.Core.Combat
 
         private void Update()
         {
-            float deltaTime = Time.deltaTime;
+            Move();
+        }
 
+        private void Move()
+        {
+            switch (_movement)
+            {
+                case Movement.Send:
+                    Send();
+                    break;
+                case Movement.Return:
+                    Return();
+                    break;
+            }
+        }
+
+        private void Send()
+        {
             //This will make it slow down near the end of its goal.
             float movementMultiplier = Mathf.Lerp(1f, 0.01f, _travelTime);
-            _travelTime += deltaTime * _movementSpeed * movementMultiplier;
+            _travelTime += Time.deltaTime * _movementSpeed * movementMultiplier;
 
             //Wanna also lerp to the max size.
-            float scale = 0.2f;
+            float scale = START_SCALE;
             if (_travelTime > 0.75f)
             {
                 float scaleTime = (_travelTime - 0.75f) / 0.25f;
-                scale = Mathf.Lerp(scale, 1f, scaleTime);
+                scale = Mathf.Lerp(scale, END_SCALE, scaleTime);
             }
 
             transform.localScale = new Vector3(scale, scale, scale);
-            transform.position = Vector2.Lerp(_startPosition, _targetPosition, _travelTime);
-            if (_travelTime >= 1f)
+            transform.position = Vector2.Lerp(_startPosition, TargetPosition, _travelTime);
+            if (_travelTime >= 1f && !_hasDied)
             {
+                _hasDied = true;
                 Death();
             }
         }
 
-        public void Fire(BubbleData bubbleData, Type type, Vector3 targetPosition)
+        private void Return()
+        {
+            float movementMultiplier = Mathf.Lerp(1f, 0.01f, _travelTime);
+            _travelTime += Time.deltaTime * _movementSpeed * movementMultiplier;
+
+            float scale = END_SCALE;
+            if (_travelTime > 0.75f)
+            {
+                float scaleTime = (_travelTime - 0.75f) / 0.25f;
+                scale = Mathf.Lerp(scale, START_SCALE, scaleTime);
+            }
+
+            transform.localScale = new Vector3(scale, scale, scale);
+            transform.position = Vector2.Lerp(transform.position, TargetPosition, Time.deltaTime * 6f);
+        }
+
+        public void Fire(BubbleData bubbleData, Type type, Vector3 targetPosition, Transform shooter)
         {
             _bubbleData = bubbleData;
             _type = type;
-            _targetPosition = targetPosition;
+            _shooter = shooter;
+            TargetPosition = targetPosition;
         }
 
         private void Death()
@@ -68,12 +111,7 @@ namespace ProjectBubble.Core.Combat
             switch (_type)
             {
                 case Type.Catch:
-                    CalculateBubbledObjects(_bubbleData.BubbledObjects);
-                    DisableGameObjects(_bubbleData.BubbledObjects);
-
-                    CalculateBubbledTiles(_bubbleData.BubbledTiles);
-                    DestroyOriginalTiles(_bubbleData.BubbledTiles);
-                    OnCatch?.Invoke(_bubbleData);
+                    StartCoroutine(CatchRoutine());
                     break;
                 case Type.Release:
                     ReleaseBurst();
@@ -84,7 +122,25 @@ namespace ProjectBubble.Core.Combat
                     break;
             }
 
-            Destroy(gameObject);
+            //Destroy(gameObject);
+        }
+
+        public IEnumerator CatchRoutine()
+        {
+            BubbleCamera.MovePosition(transform.position);
+            yield return new WaitForEndOfFrame();
+            _screenshotRenderer.sprite = BubbleCamera.TakeSnapshot();
+            _movement = Movement.Return;
+            _travelTime = 0f;
+
+            CalculateBubbledObjects(_bubbleData.BubbledObjects);
+            CalculateBubbledTiles(_bubbleData.BubbledTiles);
+
+            DisableGameObjects(_bubbleData.BubbledObjects);
+            DestroyOriginalTiles(_bubbleData.BubbledTiles);
+
+            //Go Back to player and orbit
+            OnCatch?.Invoke(_bubbleData);
         }
 
         public void CalculateScreenshot()
@@ -113,7 +169,7 @@ namespace ProjectBubble.Core.Combat
 
         private void ReleaseBubbledTiles(List<BubbledTile> bubbledTiles)
         {
-            Tilemap tilemap = Ground.Map;
+            Tilemap tilemap = World.Ground;
             Vector3Int position = new(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y), 0);
             foreach (BubbledTile bubbledTile in bubbledTiles)
             {
@@ -142,6 +198,7 @@ namespace ProjectBubble.Core.Combat
                 }
 
                 tilemap.SetTile(tilePosition, bubbledTile.tile);
+                World.Undercliff.SetTile(tilePosition + Vector3Int.down, World.UndercliffTile);
             }
 
             bubbledTiles.Clear();
@@ -165,14 +222,14 @@ namespace ProjectBubble.Core.Combat
 
         private void CalculateBubbledTiles(List<BubbledTile> bubbledTiles)
         {
-            Tilemap tilemap = Ground.Map;
+            Tilemap tilemap = World.Ground;
             bubbledTiles.Clear();
             Vector3Int position = new Vector3Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y), 0);
             foreach (Vector3Int tilePosition in tilemap.cellBounds.allPositionsWithin)
             {
                 Vector2 worldPosition = new Vector2(tilePosition.x, tilePosition.y);
                 Vector2 worldPositionCenter = worldPosition + new Vector2(0.5f, 0.5f);
-                if (_collider2D.OverlapPoint(worldPosition) || _collider2D.OverlapPoint(worldPositionCenter))
+                if (tilemap.HasTile(tilePosition) && (_collider2D.OverlapPoint(worldPosition) || _collider2D.OverlapPoint(worldPositionCenter)))
                 {
                     TileBase tile = tilemap.GetTile(tilePosition);
                     Vector3Int offset = tilePosition - position;
@@ -207,10 +264,12 @@ namespace ProjectBubble.Core.Combat
 
         private void DestroyOriginalTiles(List<BubbledTile> bubbledTiles)
         {
-            Tilemap tilemap = Ground.Map;
+            Tilemap tilemap = World.Ground;
+            Tilemap undercliff = World.Undercliff;
             foreach (var bubbledTile in bubbledTiles)
             {
                 tilemap.SetTile(bubbledTile.originalPosition, null);
+                undercliff.SetTile(bubbledTile.originalPosition + Vector3Int.down, null);
             }
         }
 
@@ -226,6 +285,12 @@ namespace ProjectBubble.Core.Combat
         {
             Catch = 0,
             Release = 1
+        }
+
+        public enum Movement
+        {
+            Send = 0,
+            Return = 1
         }
     }
 }

@@ -30,5 +30,7 @@ namespace ProjectBubble.Core
             transform.position = Vector2.MoveTowards(transform.position, Target.position, maxDistanceDelta);
             transform.position = transform.position + TargetOffset;
         }
+
+
     }
 }

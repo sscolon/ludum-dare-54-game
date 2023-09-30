@@ -87,7 +87,7 @@ namespace ProjectBubble.Core
         {
             //TODO: Telegraph it, we'll do this in polishing phase.
             //There'll be a sound effect and particle effect before the enemy spawns.
-            Tilemap ground = Ground.Map;
+            Tilemap ground = World.Ground;
             List<Vector3Int> spawnPositions = new();
             foreach (var cellPosition in ground.cellBounds.allPositionsWithin)
             {
