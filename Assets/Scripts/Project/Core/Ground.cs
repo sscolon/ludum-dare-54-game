@@ -7,7 +7,7 @@ namespace ProjectBubble.Core
     public class Ground : MonoBehaviour
     {
         public static Tilemap Map { get; private set; }
-        private void Start()
+        private void OnEnable()
         {
             Map = GetComponent<Tilemap>();
         }

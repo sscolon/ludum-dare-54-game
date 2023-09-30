@@ -12,6 +12,7 @@ namespace ProjectBubble.Content.Enemies
         {
             base.Death();
             _loot?.Instantiate(transform.position);
+            Destroy(gameObject);
         }
     }
 }

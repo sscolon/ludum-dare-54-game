@@ -118,7 +118,7 @@ namespace ProjectBubble.Core
             }
         }
 
-        private GameObject SpawnPrefab(GameObject prefab)
+        public GameObject SpawnPrefab(GameObject prefab)
         {
             Vector3Int tilePosition = GetRandomSpawnPosition();
             Vector3 worldPosition = tilePosition;
