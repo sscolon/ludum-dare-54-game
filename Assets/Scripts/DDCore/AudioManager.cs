@@ -8,13 +8,10 @@ namespace DDCore
         private const int MAX_AUDIO_SOURCE_COUNT = 20;
         private AudioSource _musicSource;
         private AudioSource[] _audioSources;
+        private static float _soundVolume = 1f;
+        private static float _musicVolume = 1f;
         private static AudioManager _instance;
         [SerializeField] private float _maxPitchVariation = 0.05f;
-        [SerializeField] private AudioMixer masterMixer;
-        [SerializeField] private AudioMixerGroup sfxGroup;
-        [SerializeField] private AudioMixerGroup musicGroup;
-        [SerializeField] private AudioMixerGroup ambientGroup;
-
         private void OnEnable()
         {
             Init();
@@ -40,12 +37,13 @@ namespace DDCore
             DontDestroyOnLoad(gameObject);
         }
 
-        public void PlaySound(AudioClip audioClip, float volume = 1f)
+        public static void PlaySound(AudioClip audioClip)
         {
+            AudioManager audioManager = _instance;
             AudioSource targetSource = null;
-            for (int i = 0; i < _audioSources.Length; i++)
+            for (int i = 0; i < audioManager._audioSources.Length; i++)
             {
-                AudioSource audioSource = _audioSources[i];
+                AudioSource audioSource = audioManager._audioSources[i];
                 if (audioSource.clip == audioClip)
                 {
                     targetSource = audioSource;
@@ -61,9 +59,9 @@ namespace DDCore
             if (targetSource == null)
             {
                 //Find oldest audio source if ran out of sources.
-                for (int i = 0; i < _audioSources.Length; i++)
+                for (int i = 0; i < audioManager._audioSources.Length; i++)
                 {
-                    AudioSource audioSource = _audioSources[i];
+                    AudioSource audioSource = audioManager._audioSources[i];
                     if (audioSource.time > oldestTime)
                         continue;
                     oldestTime = audioSource.time;
@@ -71,21 +69,47 @@ namespace DDCore
                 }
             }
 
-            targetSource.volume = volume;
+            targetSource.volume = _soundVolume;
             targetSource.clip = audioClip;
-            targetSource.pitch = UnityEngine.Random.Range(-_maxPitchVariation, _maxPitchVariation);
+            targetSource.pitch = Random.Range(-audioManager._maxPitchVariation, audioManager._maxPitchVariation);
             targetSource.Play();
         }
 
-        public void PlayMusic(AudioClip audioClip)
+        public static void PlayMusic(AudioClip audioClip)
         {
-            _musicSource.clip = audioClip;
-            _musicSource.Play();
+            AudioManager audioManager = _instance;
+            audioManager._musicSource.volume = _musicVolume;
+            audioManager._musicSource.clip = audioClip;
+            audioManager._musicSource.Play();
         }
 
-        public static AudioManager GetInstance()
+        public static void SetSoundVolume(float volume)
         {
-            return _instance;
+            AudioManager audioManager = _instance;
+            _soundVolume = volume;
+  
+            for(int i = 0; i < audioManager._audioSources.Length; i++)
+            {
+                AudioSource audioSource = audioManager._audioSources[i];
+                audioSource.volume = volume;
+            }
+        }
+
+        public static float GetSoundVolume()
+        {
+            return _soundVolume;
+        }
+
+        public static void SetMusicVolume(float volume)
+        {
+            AudioManager audioManager = _instance;
+            _musicVolume = volume;
+            audioManager._musicSource.volume = volume;
+        }
+
+        public static float GetMusicVolume()
+        {
+            return _musicVolume;
         }
     }
 }
