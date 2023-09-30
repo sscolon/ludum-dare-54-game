@@ -1,9 +1,10 @@
+using ProjectBubble.Core.Combat;
 using UnityEngine;
 
 namespace ProjectBubble.MainPlayer
 {
     [RequireComponent(typeof(Rigidbody2D))]
-    public class Player : MonoBehaviour
+    public class Player : Entity
     {
         private Rigidbody2D _rb2D;
         private float _inputX;
