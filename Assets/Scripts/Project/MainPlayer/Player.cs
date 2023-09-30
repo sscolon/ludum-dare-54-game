@@ -9,7 +9,8 @@ using UnityEngine;
 namespace ProjectBubble.MainPlayer
 {
     [RequireComponent(typeof(Rigidbody2D))]
-    public class Player : Entity
+    public class Player : Entity,
+        ICollector
     {
         private Queue<BubbleData> _bubbleQueue;
         private Rigidbody2D _rb2D;
@@ -28,6 +29,8 @@ namespace ProjectBubble.MainPlayer
         [Header("Collecting")]
         [SerializeField] private float _collectRadius = 1;
 
+        public event Action<BubbleData> OnQueue;
+        public event Action<BubbleData> OnDequeue;
         public event Action<Dictionary<int, int>> OnCollect;
         private void Start()
         {
@@ -80,6 +83,7 @@ namespace ProjectBubble.MainPlayer
             BubbleData instance = Instantiate(bubbleData);
             instance.name = bubbleData.name;
             _bubbleQueue.Enqueue(instance);
+            OnQueue?.Invoke(instance);
             //VFX HERE
         }
 
@@ -89,6 +93,8 @@ namespace ProjectBubble.MainPlayer
                 return;
 
             BubbleData bubbleData = _bubbleQueue.Dequeue();
+            OnDequeue?.Invoke(bubbleData);
+
             GameObject instance = Instantiate(bubbleData.prefab, transform.position, bubbleData.prefab.transform.rotation);
             Bubble bubble = instance.GetComponent<Bubble>();
             if(bubble == null)
@@ -106,6 +112,7 @@ namespace ProjectBubble.MainPlayer
                 {
                     bubble.OnRelease -= Release;
                     _bubbleQueue.Enqueue(bubbleData);
+                    OnQueue?.Invoke(bubbleData);
                 }
             }
             else
@@ -116,6 +123,7 @@ namespace ProjectBubble.MainPlayer
                 {
                     bubble.OnCatch -= Catch;
                     _bubbleQueue.Enqueue(bubbleData);
+                    OnQueue?.Invoke(bubbleData);
                 }
             }
         }
@@ -124,6 +132,12 @@ namespace ProjectBubble.MainPlayer
         {
             base.TakeDamage(damage);
             ScoreManager.ModifyScore(_damagePenalty);
+        }
+
+        public override void Death()
+        {
+            base.Death();
+            GameManager.Lose();
         }
     }
 }

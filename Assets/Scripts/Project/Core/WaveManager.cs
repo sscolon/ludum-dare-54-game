@@ -6,6 +6,7 @@ namespace ProjectBubble.Core
 {
     public class WaveManager : MonoBehaviour
     {
+        private static int _lastWaveIndex;
         private int _waveIndex;
         private int _enemyCount;
         private float _enemySpawnCountdown;
@@ -71,6 +72,10 @@ namespace ProjectBubble.Core
                 default:
                     break;
             }
+        }
+        public static int GetWave()
+        {
+            return _lastWaveIndex;
         }
 
         public void StartWaves()
@@ -163,8 +168,9 @@ namespace ProjectBubble.Core
 
         public void NextWave()
         {
+            _lastWaveIndex = _waveIndex;
             _waveIndex++;
-            DebugWrapper.Log(_waveIndex);
+            DebugWrapper.Log($"Current Wave {_lastWaveIndex}");
             if (_enemyCounts.Length > _waveIndex)
             {
                 int min = _enemyCounts[_waveIndex].x;
@@ -185,6 +191,7 @@ namespace ProjectBubble.Core
             if (_waveIndex >= _maxWave)
             {
                 //YOU WIN
+                GameManager.Victory();
             }
             else
             {

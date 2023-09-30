@@ -11,6 +11,11 @@ namespace ProjectBubble.Core
             OnScoreValueChanged?.Invoke(_score);
         }
 
+        public static float GetScore()
+        {
+            return _score;
+        }
+
         public static void ModifyScore(float score)
         {
             _score += score;
