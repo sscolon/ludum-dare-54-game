@@ -74,6 +74,15 @@ namespace ProjectBubble.MainPlayer
             }
         }
 
+        public void NewBubble(BubbleData bubbleData)
+        {
+            //We have to clone it so that we can have duplicates of the same bubble type.
+            BubbleData instance = Instantiate(bubbleData);
+            instance.name = bubbleData.name;
+            _bubbleQueue.Enqueue(instance);
+            //VFX HERE
+        }
+
         private void NextBubble()
         {
             if (_bubbleQueue.Count <= 0)

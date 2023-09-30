@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using ProjectBubble.Core.Collectibles;
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace ProjectBubble.Core.Collectibles
+namespace ProjectBubble.Content.Collectibles
 {
     public class CollectibleCoin : CollectibleDefault
     {

@@ -1,12 +1,9 @@
 ﻿using DDCore;
-using System;
+using ProjectBubble.Core.Collectibles;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
-namespace ProjectBubble.Core.Collectibles
+namespace ProjectBubble.Content.Collectibles
 {
     public abstract class CollectibleDefault :
         MonoBehaviour,
@@ -22,10 +19,10 @@ namespace ProjectBubble.Core.Collectibles
         [SerializeField] private float _spawnTime;
         [SerializeField] private float _arcHeight;
         [SerializeField] private CollectibleState _state;
-        private void Start()
+        protected virtual void Start()
         {
             _rb2D = GetComponent<Rigidbody2D>();
-               _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+            _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         }
 
         private void FixedUpdate()
