@@ -1,5 +1,4 @@
-﻿using DDCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -16,7 +15,10 @@ namespace ProjectBubble.Core.Combat
         private Vector2 _startPosition;
         private Vector2 _targetPosition;
         private Type _type;
+
         [SerializeField] private float _movementSpeed;
+        [SerializeField] private float _bubbleReleaseDamage;
+        [SerializeField] private float _bubbleBurstDamage;
 
         public event Action<BubbleData> OnCatch;
         public event Action<BubbleData> OnRelease;
@@ -38,10 +40,10 @@ namespace ProjectBubble.Core.Combat
 
             //Wanna also lerp to the max size.
             float scale = 0.2f;
-            if(_travelTime > 0.75f)
+            if (_travelTime > 0.75f)
             {
                 float scaleTime = (_travelTime - 0.75f) / 0.25f;
-                scale = Mathf.Lerp(scale, 1f, scaleTime);             
+                scale = Mathf.Lerp(scale, 1f, scaleTime);
             }
 
             transform.localScale = new Vector3(scale, scale, scale);
@@ -60,7 +62,7 @@ namespace ProjectBubble.Core.Combat
         }
 
         private void Death()
-        {    
+        {
             //We need to send the bubble data somewhere though, should we just use a callback?
             //We can VFX later, there will be a thing where it returns to you with the screenshot or pops depending on the bubble type.
             switch (_type)
@@ -74,6 +76,7 @@ namespace ProjectBubble.Core.Combat
                     OnCatch?.Invoke(_bubbleData);
                     break;
                 case Type.Release:
+                    ReleaseBurst();
                     ReleaseBubbledTiles(_bubbleData.BubbledTiles);
                     ReleaseBubbledObjects(_bubbleData.BubbledObjects);
                     _bubbleData.ClearData();
@@ -89,25 +92,30 @@ namespace ProjectBubble.Core.Combat
             //TODO:, We'll add this cool little thing at the end.
         }
 
-        public bool IsReleaseValid(List<BubbledTile> bubbledTiles, Vector3 targetPosition)
+        private void ReleaseBurst()
         {
-            Tilemap tilemap = Ground.Map;
-            Vector3Int position = new Vector3Int(Mathf.RoundToInt(targetPosition.x), Mathf.RoundToInt(targetPosition.y), 0);
-            foreach (BubbledTile bubbledTile in bubbledTiles)
-            {
-                Vector3Int tilePosition = position + bubbledTile.offset;
-                
-            }
+            List<Collider2D> collisions = new();
+            ContactFilter2D contactFilter2D = new();
+            contactFilter2D.NoFilter();
 
-            //Uh i think we need pathfinding for this?
-            return true;
+            _collider2D.OverlapCollider(contactFilter2D, collisions);
+            foreach (Collider2D col in collisions)
+            {
+                //Unsure if I need to add this check but whatever.
+                if (col.gameObject == gameObject)
+                    continue;
+                if (col.gameObject.TryGetComponent(out IDamageable damageable))
+                {
+                    damageable.TakeDamage(_bubbleBurstDamage);
+                }
+            }
         }
 
         private void ReleaseBubbledTiles(List<BubbledTile> bubbledTiles)
         {
             Tilemap tilemap = Ground.Map;
             Vector3Int position = new(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y), 0);
-            foreach(BubbledTile bubbledTile in bubbledTiles)
+            foreach (BubbledTile bubbledTile in bubbledTiles)
             {
                 Vector3Int tilePosition = position + bubbledTile.offset;
                 Vector3Int startTilePosition = tilePosition;
@@ -122,7 +130,7 @@ namespace ProjectBubble.Core.Combat
                         for (int y = -SEARCH_RANGE; y < SEARCH_RANGE; y++)
                         {
                             Vector3Int offset = new Vector3Int(x, y, 0);
-                            if(!tilemap.HasTile(tilePosition + offset))
+                            if (!tilemap.HasTile(tilePosition + offset))
                             {
                                 availablePositions.Add(tilePosition + offset);
                             }
@@ -141,10 +149,15 @@ namespace ProjectBubble.Core.Combat
 
         private void ReleaseBubbledObjects(List<BubbledObject> bubbledObjects)
         {
-            foreach(BubbledObject bubbledObject in bubbledObjects)
+            foreach (BubbledObject bubbledObject in bubbledObjects)
             {
                 Vector3 position = transform.position + bubbledObject.offset;
                 bubbledObject.gameObject.transform.position = position;
+                if (bubbledObject.gameObject.TryGetComponent(out IDamageable damageable))
+                {
+                    damageable.TakeDamage(_bubbleReleaseDamage);
+                }
+
                 bubbledObject.gameObject.SetActive(true);
             }
             bubbledObjects.Clear();
@@ -203,7 +216,7 @@ namespace ProjectBubble.Core.Combat
 
         private void DisableGameObjects(List<BubbledObject> bubbledObjects)
         {
-            foreach(var bubbledObject in bubbledObjects)
+            foreach (var bubbledObject in bubbledObjects)
             {
                 bubbledObject.gameObject.SetActive(false);
             }
