@@ -23,6 +23,7 @@ namespace ProjectBubble.Content.Collectibles
         {
             _rb2D = GetComponent<Rigidbody2D>();
             _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+            _spriteRenderer.transform.localScale = Vector3.zero;
         }
 
         private void FixedUpdate()

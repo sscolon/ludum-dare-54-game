@@ -10,14 +10,26 @@ namespace ProjectBubble.Core
         private int _enemyCount;
         private float _enemySpawnCountdown;
         private float _enemySpawnTime;
-        private bool _hasStarted;
+        private float _elapsedRestTime;
+        private State _state;
         private IWaveBehaviour[] _waveBehaviours;
         private Queue<GameObject> _prefabsToInstantiate;
+
         [SerializeField] private int _maxWave;
-        [SerializeField] private Vector2Int[] _enemyCounts;
+        [SerializeField] private int _restWaveDivisor;
+        [SerializeField] private float _restTime;
+
+        [Header("Enemy Spawning")]
         [SerializeField] private float _minEnemySpawnTime;
         [SerializeField] private float _maxEnemySpawnTime;
+        [SerializeField] private Vector2Int[] _enemyCounts;
         [SerializeField] private GameObject[] _prefabs;
+
+        [Header("Rest Wave")]
+        [SerializeField] private int _minBonusShopItemCount;
+        [SerializeField] private int _maxBonusShopItemCount;
+        [SerializeField] private GameObject[] _requiredShopItemPrefabs;
+        [SerializeField] private GameObject[] _bonusShopItemPrefabs;
         private void Start()
         {
             _prefabsToInstantiate = new Queue<GameObject>();
@@ -33,23 +45,40 @@ namespace ProjectBubble.Core
 
         private void Update()
         {
-            if (!_hasStarted)
-                return;
-            _enemySpawnCountdown -= Time.deltaTime;
-            if (_enemySpawnCountdown <= 0 && _prefabsToInstantiate.Count > 0)
+            if (Input.GetKeyDown(KeyCode.Y))
             {
-                _enemySpawnCountdown = _enemySpawnTime;
-                SpawnEnemy();
+                //Just verifiying this works.
+                NextWave();
+            }
+
+            switch (_state)
+            {
+                case State.Combat:
+                    _enemySpawnCountdown -= Time.deltaTime;
+                    if (_enemySpawnCountdown <= 0 && _prefabsToInstantiate.Count > 0)
+                    {
+                        _enemySpawnCountdown = _enemySpawnTime;
+                        SpawnEnemy();
+                    }
+                    break;
+                case State.Rest:
+                    _elapsedRestTime += Time.deltaTime;
+                    if (_elapsedRestTime >= _restTime)
+                    {
+                        NextWave();
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 
         public void StartWaves()
         {
-            _hasStarted = true;
             NextWave();
         }
 
-        private void SpawnEnemy()
+        private Vector3Int GetRandomSpawnPosition()
         {
             //TODO: Telegraph it, we'll do this in polishing phase.
             //There'll be a sound effect and particle effect before the enemy spawns.
@@ -64,19 +93,33 @@ namespace ProjectBubble.Core
             }
 
             Vector3Int spawnPosition = spawnPositions[Random.Range(0, spawnPositions.Count)];
+            return spawnPosition;
+        }
+
+        private void SpawnEnemy()
+        {
             GameObject prefab = _prefabsToInstantiate.Dequeue();
-            GameObject instance = Instantiate(prefab, spawnPosition, prefab.transform.rotation);
+            GameObject instance = SpawnPrefab(prefab);
             IWaveBehaviour waveBehaviour = instance.GetComponent<IWaveBehaviour>();
             waveBehaviour.OnClear += Progress;
             void Progress()
             {
                 waveBehaviour.OnClear -= Progress;
                 _enemyCount--;
-                if(_enemyCount <= 0)
+                if (_enemyCount <= 0)
                 {
                     NextWave();
                 }
             }
+        }
+
+        private GameObject SpawnPrefab(GameObject prefab)
+        {
+            Vector3Int tilePosition = GetRandomSpawnPosition();
+            Vector3 worldPosition = tilePosition;
+            worldPosition += new Vector3(0.5f, 0.5f);
+            GameObject instance = GameObject.Instantiate(prefab, worldPosition, prefab.transform.rotation);
+            return instance;
         }
 
         private bool CanSpawn(IWaveBehaviour waveBehaviour)
@@ -87,6 +130,7 @@ namespace ProjectBubble.Core
                 return false;
             return true;
         }
+
         private int NextPrefabIndex()
         {
             float totalWeight = 0;
@@ -96,7 +140,7 @@ namespace ProjectBubble.Core
                 if (CanSpawn(waveBehaviour))
                 {
                     totalWeight += waveBehaviour.SpawnWeight * 100;
-                }               
+                }
             }
 
             float randomWeight = Random.Range(0, totalWeight);
@@ -120,7 +164,8 @@ namespace ProjectBubble.Core
         public void NextWave()
         {
             _waveIndex++;
-            if(_enemyCounts.Length > _waveIndex)
+            DebugWrapper.Log(_waveIndex);
+            if (_enemyCounts.Length > _waveIndex)
             {
                 int min = _enemyCounts[_waveIndex].x;
                 int max = _enemyCounts[_waveIndex].y;
@@ -133,7 +178,7 @@ namespace ProjectBubble.Core
                 int max = _enemyCounts[_enemyCounts.Length - 1].y;
                 _enemyCount = Random.Range(min, max);
             }
-  
+
             //Gradually get faster as the waves progress.
             float waveProgress = (_waveIndex + 1) / (float)_maxWave;
             _enemySpawnTime = Mathf.Lerp(_maxEnemySpawnTime, _minEnemySpawnTime, waveProgress);
@@ -145,13 +190,53 @@ namespace ProjectBubble.Core
             {
                 //We can hardcode shops and stuff here.
                 //For now enemies get queued up and will spawn on a timer.
-                for (int e = 0; e < _enemyCount; e++)
+                if (_waveIndex % _restWaveDivisor == 0)
                 {
-                    int index = NextPrefabIndex();
-                    GameObject prefab = _prefabs[index];
-                    _prefabsToInstantiate.Enqueue(prefab);
+                    _state = State.Rest;
+                    _elapsedRestTime = 0;
+                    int bonusShopItemCount = Random.Range(_minBonusShopItemCount, _maxBonusShopItemCount);
+                    for (int r = 0; r < _requiredShopItemPrefabs.Length; r++)
+                    {
+                        SpawnPrefab(_requiredShopItemPrefabs[r]);
+                    }
+
+                    for (int s = 0; s < bonusShopItemCount; s++)
+                    {
+                        int rand = Random.Range(0, _bonusShopItemPrefabs.Length);
+                        GameObject prefab = _bonusShopItemPrefabs[rand];
+                        SpawnPrefab(prefab);
+                    }
+                }
+                else
+                {
+                    _state = State.Combat;
+                    int count = _enemyCount;
+                    for (int e = 0; e < count; e++)
+                    {
+                        int index = NextPrefabIndex();
+                        if (_prefabs == null || _prefabs.Length <= 0)
+                        {
+                            _enemyCount--;
+                            continue;
+                        }
+
+                        GameObject prefab = _prefabs[index];
+                        _prefabsToInstantiate.Enqueue(prefab);
+                    }
+
+                    if(_enemyCount <= 0)
+                    {
+                        NextWave();
+                    }
                 }
             }
+        }
+
+        private enum State
+        {
+            Idle = 0,
+            Combat = 1,
+            Rest = 2
         }
     }
 }

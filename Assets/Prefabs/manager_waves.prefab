@@ -45,6 +45,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _maxWave: 15
+  _restWaveDivisor: 5
+  _restTime: 1
+  _minEnemySpawnTime: 1
+  _maxEnemySpawnTime: 2
   _enemyCounts:
   - {x: 1, y: 2}
   - {x: 1, y: 2}
@@ -57,6 +61,11 @@ MonoBehaviour:
   - {x: 5, y: 8}
   - {x: 5, y: 9}
   - {x: 10, y: 10}
-  _minEnemySpawnTime: 1
-  _maxEnemySpawnTime: 2
   _prefabs: []
+  _minBonusShopItemCount: 1
+  _maxBonusShopItemCount: 2
+  _requiredShopItemPrefabs:
+  - {fileID: 91308471390323184, guid: f5b61d618e598ab469924328173880c7, type: 3}
+  _bonusShopItemPrefabs:
+  - {fileID: 91308471390323184, guid: f5b61d618e598ab469924328173880c7, type: 3}
+  - {fileID: 2804530940448278903, guid: 2fd8968b57ded954eb4dd77203d6f1fb, type: 3}
