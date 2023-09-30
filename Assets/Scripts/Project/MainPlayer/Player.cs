@@ -1,6 +1,8 @@
 using DDCore;
 using ProjectBubble.Core;
+using ProjectBubble.Core.Collectibles;
 using ProjectBubble.Core.Combat;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,7 +15,8 @@ namespace ProjectBubble.MainPlayer
         private Rigidbody2D _rb2D;
         private float _inputX;
         private float _inputY;
-   
+
+        private Dictionary<int, int> _collectibleIndex;
         [SerializeField] private BubbleData _starterBubble;
         [SerializeField] private float _movementSpeed;
         [SerializeField] private float _acceleration;
@@ -22,9 +25,14 @@ namespace ProjectBubble.MainPlayer
         [Header("Scoring")]
         [SerializeField] private float _damagePenalty;
 
+        [Header("Collecting")]
+        [SerializeField] private float _collectRadius = 1;
+
+        public event Action<Dictionary<int, int>> OnCollect;
         private void Start()
         {
-            _bubbleQueue = new Queue<BubbleData>();
+            _collectibleIndex = new();
+            _bubbleQueue = new();
             _bubbleQueue.Enqueue(_starterBubble);
             _rb2D = GetComponent<Rigidbody2D>();
         }
@@ -45,6 +53,25 @@ namespace ProjectBubble.MainPlayer
             Vector2 normalizedInput = input.normalized;
             Vector2 targetSpeed = normalizedInput * _movementSpeed;
             _rb2D.Move(targetSpeed, _acceleration, _deceleration);
+
+            //Just call it every frame, overlap circle isn't expensive anyway.
+            Collect();
+        }
+
+        private void Collect()
+        {
+            Collider2D[] collisions = Physics2D.OverlapCircleAll(transform.position, _collectRadius);
+            for(int i = 0; i < collisions.Length; i++)
+            {
+                Collider2D collision = collisions[i];
+                if (collision.gameObject == gameObject)
+                    continue;
+                if(collision.gameObject.TryGetComponent(out ICollectible collectible) && collectible.CanCollect(gameObject, _collectibleIndex))
+                {
+                    collectible.Collect(gameObject, _collectibleIndex);
+                    OnCollect?.Invoke(_collectibleIndex);
+                }
+            }
         }
 
         private void NextBubble()

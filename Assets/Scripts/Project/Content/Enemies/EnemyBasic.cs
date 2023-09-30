@@ -1,9 +1,8 @@
-﻿using ProjectBubble.Core.Combat;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ProjectBubble.Content.Enemies
 {
-    public class EnemyBasic : Entity
+    public class EnemyBasic : Enemy
     {
         private Rigidbody2D _rb2D;
         [SerializeField] private float _acceleration;
