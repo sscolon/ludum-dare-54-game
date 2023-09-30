@@ -3,6 +3,7 @@ using ProjectBubble.Core;
 using ProjectBubble.Core.Collectibles;
 using ProjectBubble.Core.Combat;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,9 +15,10 @@ namespace ProjectBubble.MainPlayer
     {
         private Queue<BubbleData> _bubbleQueue;
         private Rigidbody2D _rb2D;
+        private Coroutine _tauntRoutine;
         private float _inputX;
         private float _inputY;
-
+ 
         private Dictionary<int, int> _collectibleIndex;
         [SerializeField] private BubbleData _starterBubble;
         [SerializeField] private float _movementSpeed;
@@ -28,6 +30,10 @@ namespace ProjectBubble.MainPlayer
 
         [Header("Collecting")]
         [SerializeField] private float _collectRadius = 1;
+
+        [Header("VFX")]
+        [SerializeField] private Transform _tauntTransform;
+        [SerializeField] private Transform _flipperTransform;
 
         public event Action<BubbleData> OnQueue;
         public event Action<BubbleData> OnDequeue;
@@ -44,9 +50,25 @@ namespace ProjectBubble.MainPlayer
         {
             _inputX = Input.GetAxisRaw("Horizontal");
             _inputY = Input.GetAxisRaw("Vertical");
+            Vector3 mouseWorld = Util.GetMouseWorldPosition();
+            if(mouseWorld.x < transform.position.x)
+            {
+                _flipperTransform.localScale = new Vector3(-1f, 1f, 1f);
+            }
+            else
+            {
+                _flipperTransform.localScale = Vector3.one;
+            }
+
             if (Input.GetMouseButtonDown(0))
             {
                 NextBubble();
+            }
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                if (_tauntRoutine != null)
+                    StopCoroutine(_tauntRoutine);
+                _tauntRoutine = StartCoroutine(Taunt());
             }
         }
 
@@ -59,6 +81,24 @@ namespace ProjectBubble.MainPlayer
 
             //Just call it every frame, overlap circle isn't expensive anyway.
             Collect();
+           
+        }
+
+        private IEnumerator Taunt()
+        {
+            const float Taunt_Speed = 3f;
+            float elapsedTime = 0f;
+            while(elapsedTime < 1f)
+            {
+                elapsedTime += Time.deltaTime * Taunt_Speed;
+                float easedTime = Easing.Calculate(elapsedTime, EaseType.Out_Cubic);
+                Vector3 startScale = new Vector3(3f, 0f, 0f);
+                Vector3 endScale = Vector3.one;
+
+                Vector3 scale = Vector3.Lerp(startScale, endScale, easedTime);
+                _tauntTransform.localScale = scale;
+                yield return null;
+            }
         }
 
         private void Collect()
