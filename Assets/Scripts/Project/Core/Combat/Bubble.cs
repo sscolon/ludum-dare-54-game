@@ -12,30 +12,34 @@ namespace ProjectBubble.Core.Combat
         private const float START_SCALE = 0.4f;
         private const float END_SCALE = 1f;
 
-        private bool _hasDied;
+        private bool _hasCompletedAction;
         private float _travelTime;
 
         private Type _type;
-        private Movement _movement;
+
         private Vector2 _startPosition;
 
         private Collider2D _collider2D;
-        private BubbleData _bubbleData;
-        private Transform _shooter;
+        private List<BubbledObject> _bubbledObjects;
+        private List<BubbledTile> _bubbledTiles;
 
         [SerializeField] private float _movementSpeed;
         [SerializeField] private float _bubbleReleaseDamage;
         [SerializeField] private float _bubbleBurstDamage;
         [SerializeField] private SpriteRenderer _screenshotRenderer;
+        public Movement MoveType { get; set; }
         public Vector2 TargetPosition { get; set; }
 
-        public event Action<BubbleData> OnCatch;
-        public event Action<BubbleData> OnRelease;
+        public event Action<Bubble> OnCatch;
+        public event Action<Bubble> OnRelease;
         private void Start()
         {
+            _bubbledObjects = new();
+            _bubbledTiles = new();
+            _collider2D = GetComponent<Collider2D>();
+
             _travelTime = 0f;
             _startPosition = transform.position;
-            _collider2D = GetComponent<Collider2D>();
             transform.localScale = new Vector3(START_SCALE, START_SCALE, START_SCALE);
         }
 
@@ -46,7 +50,7 @@ namespace ProjectBubble.Core.Combat
 
         private void Move()
         {
-            switch (_movement)
+            switch (MoveType)
             {
                 case Movement.Send:
                     Send();
@@ -73,10 +77,10 @@ namespace ProjectBubble.Core.Combat
 
             transform.localScale = new Vector3(scale, scale, scale);
             transform.position = Vector2.Lerp(_startPosition, TargetPosition, _travelTime);
-            if (_travelTime >= 1f && !_hasDied)
+            if (_travelTime >= 1f && !_hasCompletedAction)
             {
-                _hasDied = true;
-                Death();
+                _hasCompletedAction = true;
+                DoAction();
             }
         }
 
@@ -96,56 +100,65 @@ namespace ProjectBubble.Core.Combat
             transform.position = Vector2.Lerp(transform.position, TargetPosition, Time.deltaTime * 6f);
         }
 
-        public void Fire(BubbleData bubbleData, Type type, Vector3 targetPosition, Transform shooter)
+        public void Fire(Type type, Vector3 targetPosition)
         {
-            _bubbleData = bubbleData;
+            _hasCompletedAction = false;
             _type = type;
-            _shooter = shooter;
+            _travelTime = 0f;
+            _startPosition = transform.position;
             TargetPosition = targetPosition;
+            MoveType = Movement.Send;
         }
 
-        private void Death()
+        private void DoAction()
         {
             //We need to send the bubble data somewhere though, should we just use a callback?
             //We can VFX later, there will be a thing where it returns to you with the screenshot or pops depending on the bubble type.
             switch (_type)
             {
                 case Type.Catch:
+                    DebugWrapper.Log("Catch");
                     StartCoroutine(CatchRoutine());
                     break;
                 case Type.Release:
-                    ReleaseBurst();
-                    ReleaseBubbledTiles(_bubbleData.BubbledTiles);
-                    ReleaseBubbledObjects(_bubbleData.BubbledObjects);
-                    _bubbleData.ClearData();
-                    OnRelease?.Invoke(_bubbleData);
+                    DebugWrapper.Log("Release");
+                    StartCoroutine(ReleaseRoutine());
                     break;
             }
-
-            //Destroy(gameObject);
         }
 
-        public IEnumerator CatchRoutine()
+        private IEnumerator CatchRoutine()
         {
             BubbleCamera.MovePosition(transform.position);
             yield return new WaitForEndOfFrame();
             _screenshotRenderer.sprite = BubbleCamera.TakeSnapshot();
-            _movement = Movement.Return;
             _travelTime = 0f;
+            MoveType = Movement.Return;
 
-            CalculateBubbledObjects(_bubbleData.BubbledObjects);
-            CalculateBubbledTiles(_bubbleData.BubbledTiles);
+            CalculateBubbledObjects();
+            CalculateBubbledTiles();
 
-            DisableGameObjects(_bubbleData.BubbledObjects);
-            DestroyOriginalTiles(_bubbleData.BubbledTiles);
-
-            //Go Back to player and orbit
-            OnCatch?.Invoke(_bubbleData);
+            CatchBubbledObjects();
+            CatchBubbledTiles();
+            OnCatch?.Invoke(this);
         }
 
-        public void CalculateScreenshot()
+        private IEnumerator ReleaseRoutine()
         {
-            //TODO:, We'll add this cool little thing at the end.
+            yield return new WaitForEndOfFrame();
+            _screenshotRenderer.sprite = null;
+            _travelTime = 0f;
+            MoveType = Movement.Return;
+
+            ReleaseBurst();
+            ReleaseBubbledTiles();
+            ReleaseBubbledObjects();
+            OnRelease?.Invoke(this);
+        }
+
+        public bool HasCatch()
+        {
+            return _bubbledTiles.Count > 0 || _bubbledObjects.Count > 0;
         }
 
         private void ReleaseBurst()
@@ -167,11 +180,11 @@ namespace ProjectBubble.Core.Combat
             }
         }
 
-        private void ReleaseBubbledTiles(List<BubbledTile> bubbledTiles)
+        private void ReleaseBubbledTiles()
         {
             Tilemap tilemap = World.Ground;
             Vector3Int position = new(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y), 0);
-            foreach (BubbledTile bubbledTile in bubbledTiles)
+            foreach (BubbledTile bubbledTile in _bubbledTiles)
             {
                 Vector3Int tilePosition = position + bubbledTile.offset;
                 Vector3Int startTilePosition = tilePosition;
@@ -201,12 +214,12 @@ namespace ProjectBubble.Core.Combat
                 World.Undercliff.SetTile(tilePosition + Vector3Int.down, World.UndercliffTile);
             }
 
-            bubbledTiles.Clear();
+            _bubbledTiles.Clear();
         }
 
-        private void ReleaseBubbledObjects(List<BubbledObject> bubbledObjects)
+        private void ReleaseBubbledObjects()
         {
-            foreach (BubbledObject bubbledObject in bubbledObjects)
+            foreach (BubbledObject bubbledObject in _bubbledObjects)
             {
                 Vector3 position = transform.position + bubbledObject.offset;
                 bubbledObject.gameObject.transform.position = position;
@@ -217,13 +230,13 @@ namespace ProjectBubble.Core.Combat
 
                 bubbledObject.gameObject.SetActive(true);
             }
-            bubbledObjects.Clear();
+            _bubbledObjects.Clear();
         }
 
-        private void CalculateBubbledTiles(List<BubbledTile> bubbledTiles)
+        private void CalculateBubbledTiles()
         {
             Tilemap tilemap = World.Ground;
-            bubbledTiles.Clear();
+            _bubbledTiles.Clear();
             Vector3Int position = new Vector3Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y), 0);
             foreach (Vector3Int tilePosition in tilemap.cellBounds.allPositionsWithin)
             {
@@ -234,14 +247,14 @@ namespace ProjectBubble.Core.Combat
                     TileBase tile = tilemap.GetTile(tilePosition);
                     Vector3Int offset = tilePosition - position;
                     BubbledTile bubbledTile = new BubbledTile(tile, tilePosition, offset);
-                    bubbledTiles.Add(bubbledTile);
+                    _bubbledTiles.Add(bubbledTile);
                 }
             }
         }
 
-        private void CalculateBubbledObjects(List<BubbledObject> bubbledObjects)
+        private void CalculateBubbledObjects()
         {
-            bubbledObjects.Clear();
+            _bubbledObjects.Clear();
             List<Collider2D> collisions = new();
             ContactFilter2D contactFilter2D = new();
             contactFilter2D.NoFilter();
@@ -258,24 +271,24 @@ namespace ProjectBubble.Core.Combat
                     continue;
                 Vector3 offset = col.gameObject.transform.position - transform.position;
                 BubbledObject bubble = new BubbledObject(col.gameObject, offset);
-                bubbledObjects.Add(bubble);
+                _bubbledObjects.Add(bubble);
             }
         }
 
-        private void DestroyOriginalTiles(List<BubbledTile> bubbledTiles)
+        private void CatchBubbledTiles()
         {
             Tilemap tilemap = World.Ground;
             Tilemap undercliff = World.Undercliff;
-            foreach (var bubbledTile in bubbledTiles)
+            foreach (var bubbledTile in _bubbledTiles)
             {
                 tilemap.SetTile(bubbledTile.originalPosition, null);
                 undercliff.SetTile(bubbledTile.originalPosition + Vector3Int.down, null);
             }
         }
 
-        private void DisableGameObjects(List<BubbledObject> bubbledObjects)
+        private void CatchBubbledObjects()
         {
-            foreach (var bubbledObject in bubbledObjects)
+            foreach (var bubbledObject in _bubbledObjects)
             {
                 bubbledObject.gameObject.SetActive(false);
             }

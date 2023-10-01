@@ -22,14 +22,14 @@ namespace ProjectBubble.MainPlayer.UI
             _player.OnDequeue -= DequeueUI;
         }
 
-        private void EnqueueUI(BubbleData bubbleData)
+        private void EnqueueUI(Bubble bubble)
         {
             BubbleUI ui = Instantiate(_bubbleUIPrefab, transform, false);
             //We can do animation here later.
             _bubbleUIs.Enqueue(ui);
         }
 
-        private void DequeueUI(BubbleData bubbleData)
+        private void DequeueUI(Bubble bubble)
         {
             BubbleUI ui = _bubbleUIs.Dequeue();
             //We can do animation here later.

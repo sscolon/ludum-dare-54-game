@@ -13,8 +13,9 @@ namespace ProjectBubble.MainPlayer
     public class Player : Entity,
         ICollector
     {
+        private Dictionary<int, int> _collectibleIndex;
+        private Queue<Bubble> _bubbleQueue;
         private List<Bubble> _orbitingBubbles;
-        private Queue<BubbleData> _bubbleQueue;
         private Rigidbody2D _rb2D;
         private Coroutine _tauntRoutine;
         private float _inputX;
@@ -22,7 +23,6 @@ namespace ProjectBubble.MainPlayer
         private float _elapsedIdleTime;
         private float _deltaOffset;
 
-        private Dictionary<int, int> _collectibleIndex;
         [SerializeField] private BubbleData _starterBubble;
         [SerializeField] private float _movementSpeed;
         [SerializeField] private float _acceleration;
@@ -39,23 +39,21 @@ namespace ProjectBubble.MainPlayer
         [SerializeField] private Transform _tauntTransform;
         [SerializeField] private Transform _flipperTransform;
 
-        public event Action<BubbleData> OnQueue;
-        public event Action<BubbleData> OnDequeue;
+        public event Action<Bubble> OnQueue;
+        public event Action<Bubble> OnDequeue;
         public event Action<Dictionary<int, int>> OnCollect;
         private void Start()
         {
             _orbitingBubbles = new();
             _collectibleIndex = new();
             _bubbleQueue = new();
-            _bubbleQueue.Enqueue(_starterBubble);
             _rb2D = GetComponent<Rigidbody2D>();
+            NewBubble(_starterBubble);
         }
 
         private void Update()
         {
-            _inputX = Input.GetAxisRaw("Horizontal");
-            _inputY = Input.GetAxisRaw("Vertical");
-
+            SetInput();
             SetIdleScale();
             SetFlipperScale();
             SetOrbitingBubblePositions();
@@ -84,10 +82,10 @@ namespace ProjectBubble.MainPlayer
 
         private void SetOrbitingBubblePositions()
         {
-            const float Orbiting_Speed = 90;
+            const float Orbiting_Speed = 200;
             const float Orbiting_Radius = 1.5f;
             _deltaOffset += Time.deltaTime * Orbiting_Speed;
-            for(int i = 0; i < _orbitingBubbles.Count; i++)
+            for (int i = 0; i < _orbitingBubbles.Count; i++)
             {
                 Bubble bubble = _orbitingBubbles[i];
                 float angle = i * (360f / _orbitingBubbles.Count);
@@ -95,6 +93,12 @@ namespace ProjectBubble.MainPlayer
                 Vector3 position = transform.position + direction * Orbiting_Radius;
                 bubble.TargetPosition = position;
             }
+        }
+
+        private void SetInput()
+        {
+            _inputX = Input.GetAxisRaw("Horizontal");
+            _inputY = Input.GetAxisRaw("Vertical");
         }
 
         private void SetIdleScale()
@@ -153,11 +157,27 @@ namespace ProjectBubble.MainPlayer
         public void NewBubble(BubbleData bubbleData)
         {
             //We have to clone it so that we can have duplicates of the same bubble type.
-            BubbleData instance = Instantiate(bubbleData);
-            instance.name = bubbleData.name;
-            _bubbleQueue.Enqueue(instance);
-            OnQueue?.Invoke(instance);
+            GameObject instance = Instantiate(bubbleData.prefab, transform.position, bubbleData.prefab.transform.rotation);
+            Bubble bubble = instance.GetComponent<Bubble>();
+            bubble.OnCatch += OnCatchBubble;
+            bubble.OnRelease += OnReleaseBubble;
+            bubble.MoveType = Bubble.Movement.Return;
+            _bubbleQueue.Enqueue(bubble);
+            _orbitingBubbles.Add(bubble);
+            OnQueue?.Invoke(bubble);
             //VFX HERE
+        }
+
+        private void OnReleaseBubble(Bubble bubble)
+        {
+            _bubbleQueue.Enqueue(bubble);
+            _orbitingBubbles.Add(bubble);
+        }
+
+        private void OnCatchBubble(Bubble bubble)
+        {
+            _bubbleQueue.Enqueue(bubble);
+            _orbitingBubbles.Add(bubble);
         }
 
         private void NextBubble()
@@ -165,42 +185,13 @@ namespace ProjectBubble.MainPlayer
             if (_bubbleQueue.Count <= 0)
                 return;
 
-            BubbleData bubbleData = _bubbleQueue.Dequeue();
-            OnDequeue?.Invoke(bubbleData);
-
-            GameObject instance = Instantiate(bubbleData.prefab, transform.position, bubbleData.prefab.transform.rotation);
-            Bubble bubble = instance.GetComponent<Bubble>();
-            if (bubble == null)
-            {
-                DebugWrapper.LogError("You forgot to add the bubble reference, IDIOT!");
-                return;
-            }
+            Bubble bubble = _bubbleQueue.Dequeue();
+            _orbitingBubbles.Remove(bubble);
+            OnDequeue?.Invoke(bubble);
 
             Vector3 mouseWorld = Util.GetMouseWorldPosition();
-            if (bubbleData.HasData())
-            {
-                bubble.Fire(bubbleData, Bubble.Type.Release, mouseWorld, transform);
-                bubble.OnRelease += Release;
-                void Release(BubbleData bubbleData)
-                {
-                    bubble.OnRelease -= Release;
-                    _orbitingBubbles.Remove(bubble);
-                    _bubbleQueue.Enqueue(bubbleData);
-                    OnQueue?.Invoke(bubbleData);
-                }
-            }
-            else
-            {
-                bubble.Fire(bubbleData, Bubble.Type.Catch, mouseWorld, transform);
-                bubble.OnCatch += Catch;
-                void Catch(BubbleData bubbleData)
-                {
-                    bubble.OnCatch -= Catch;
-                    _orbitingBubbles.Add(bubble);
-                    _bubbleQueue.Enqueue(bubbleData);
-                    OnQueue?.Invoke(bubbleData);
-                }
-            }
+            Bubble.Type bubbleType = bubble.HasCatch() ? Bubble.Type.Release : Bubble.Type.Catch;
+            bubble.Fire(bubbleType, mouseWorld);
         }
 
         public override void TakeDamage(float damage)
