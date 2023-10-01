@@ -96,7 +96,7 @@ MonoBehaviour:
   _collectVFX: {fileID: 3830383740821906441}
   _state: 2
   _minCost: 10
-  _maxCost: 50
+  _maxCost: 25
   _priceTmp: {fileID: 5968685643301779302}
   _icon: {fileID: 3013416057045721661}
   _bubblesToSell:
@@ -402,6 +402,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isRandom: 0
+  _playOnStart: 0
   _screenshake: 0
   _screenshakeStrength: 0
   _screenshakeDuration: 0

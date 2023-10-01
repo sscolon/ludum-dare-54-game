@@ -37,6 +37,7 @@ namespace ProjectBubble.Core
 
         public static event Action OnRestStart;
         public static event Action OnRestStop;
+        public static event Action<int> OnWaveStart;
         public static event Action<float> OnRestCountdown;
         private void Start()
         {
@@ -109,6 +110,18 @@ namespace ProjectBubble.Core
                 }
             }
 
+            if(spawnPositions.Count == 0)
+            {
+                foreach (var cellPosition in ground.cellBounds.allPositionsWithin)
+                {
+                    float distance = Vector3Int.Distance(cellPosition, cameraTile);
+                    if (ground.HasTile(cellPosition))
+                    {
+                        spawnPositions.Add(cellPosition);
+                    }
+                }
+            }
+
             Vector3Int spawnPosition = spawnPositions[UnityEngine.Random.Range(0, spawnPositions.Count)];
             return spawnPosition;
         }
@@ -116,7 +129,7 @@ namespace ProjectBubble.Core
         private void SpawnEnemy()
         {
             GameObject prefab = _prefabsToInstantiate.Dequeue();
-            GameObject instance = SpawnPrefab(prefab, 2);
+            GameObject instance = SpawnPrefab(prefab, 2, 10);
             IWaveBehaviour waveBehaviour = instance.GetComponent<IWaveBehaviour>();
             waveBehaviour.OnClear += Progress;
             void Progress()
@@ -232,6 +245,7 @@ namespace ProjectBubble.Core
                 {
                     if (_state == State.Rest)
                         OnRestStop?.Invoke();
+                    OnWaveStart?.Invoke(_waveIndex);
                     _state = State.Combat;
                     int count = _enemyCount;
                     for (int e = 0; e < count; e++)
