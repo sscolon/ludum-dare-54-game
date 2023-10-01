@@ -173,6 +173,6 @@ MonoBehaviour:
   _spawnWeight: 1
   _health: 3
   _maxHealth: 3
-  _loot: {fileID: 0}
+  _loot: {fileID: 11400000, guid: df2d9dd69b42d61498213650fa845b6e, type: 2}
   _acceleration: 8
   _deceleration: 4

@@ -2232,15 +2232,15 @@ Camera:
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
+    x: 0.0008237232
+    y: 0.0029291154
+    width: 0.9983525
+    height: 0.9929701
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5.625
+  orthographic size: 10.78125
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -2342,9 +2342,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Target>k__BackingField: {fileID: 992264874}
   <TargetOffset>k__BackingField: {x: 0, y: 0, z: -10}
-  <TrackingSpeed>k__BackingField: 25.5
-  <ProximityMultiplier>k__BackingField: 0
-  <ProximityThreshold>k__BackingField: 0
 --- !u!1 &816646115
 GameObject:
   m_ObjectHideFlags: 0
@@ -2585,7 +2582,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 247
+    m_Bits: 759
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: b0411080135637d4b8bf739399ba8160, type: 2}
   m_TargetDisplay: 0

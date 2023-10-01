@@ -308,7 +308,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac3e5d9fa829e244faf1e056dd5fde34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _movementSpeed: 6
+  _movementSpeed: 7
   _bubbleReleaseDamage: 2
   _bubbleBurstDamage: 3
   _screenshotRenderer: {fileID: 1376594845146226517}
