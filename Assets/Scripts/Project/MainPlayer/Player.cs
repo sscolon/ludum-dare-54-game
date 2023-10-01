@@ -38,6 +38,8 @@ namespace ProjectBubble.MainPlayer
         [SerializeField] private Transform _idleTransform;
         [SerializeField] private Transform _tauntTransform;
         [SerializeField] private Transform _flipperTransform;
+        [SerializeField] private TweenInterpolator _runInterpolator;
+        [SerializeField] private PlayerCursorPointer _playerCursorPointer;
 
         public event Action<Bubble> OnQueue;
         public event Action<Bubble> OnDequeue;
@@ -54,6 +56,7 @@ namespace ProjectBubble.MainPlayer
         private void Update()
         {
             SetInput();
+            SetRunInterpolation();
             SetIdleScale();
             SetFlipperScale();
             SetOrbitingBubblePositions();
@@ -108,6 +111,13 @@ namespace ProjectBubble.MainPlayer
             _inputY = Input.GetAxisRaw("Vertical");
         }
 
+        private void SetRunInterpolation()
+        {
+            if(_inputX != 0 || _inputY != 0)
+            {
+                _runInterpolator?.UpdateTween();
+            }
+        }
         private void SetIdleScale()
         {
             _elapsedIdleTime += Time.deltaTime;
@@ -172,7 +182,10 @@ namespace ProjectBubble.MainPlayer
             _bubbleQueue.Enqueue(bubble);
             _orbitingBubbles.Add(bubble);
             OnQueue?.Invoke(bubble);
-            //VFX HERE
+            if (_bubbleQueue.TryPeek(out Bubble next))
+            {
+                _playerCursorPointer.Target = next.transform;
+            }
         }
 
         private void OnReleaseBubble(Bubble bubble)
@@ -193,6 +206,11 @@ namespace ProjectBubble.MainPlayer
                 return;
 
             Bubble bubble = _bubbleQueue.Dequeue();
+            if(_bubbleQueue.TryPeek(out Bubble next))
+            {
+                _playerCursorPointer.Target = next.transform;
+            }
+
             _orbitingBubbles.Remove(bubble);
             OnDequeue?.Invoke(bubble);
 

@@ -20,14 +20,6 @@ namespace ProjectBubble.Core
         [field: SerializeField]
         public Vector3 TargetOffset { get; set; } = new Vector3(0, 0, -10);
 
-        [field: SerializeField]
-        public float TrackingSpeed { get; set; }
-
-        [field: SerializeField]
-        public float ProximityMultiplier { get; set; }
-
-        [field: SerializeField]
-        public float ProximityThreshold { get; set; }
         private void OnEnable()
         {
             _instance = this;
@@ -37,10 +29,9 @@ namespace ProjectBubble.Core
 
         private void LateUpdate()
         {
-            float maxDistanceDelta = Time.deltaTime * TrackingSpeed;
-            transform.position = Vector2.MoveTowards(transform.position, Target.position, maxDistanceDelta);
             CalculateCameraShake();
-            transform.position = transform.position + TargetOffset + _shakeOffset;
+            transform.position = Target.position + TargetOffset + _shakeOffset;
+            transform.position = PixelUtil.PixelRound(transform.position);
         }
 
         private void CalculateCameraShake()

@@ -2342,14 +2342,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Target>k__BackingField: {fileID: 992264874}
   <TargetOffset>k__BackingField: {x: 0, y: 0, z: -10}
-  <TrackingSpeed>k__BackingField: 18
+  <TrackingSpeed>k__BackingField: 25.5
   <ProximityMultiplier>k__BackingField: 0
   <ProximityThreshold>k__BackingField: 0
---- !u!1 &749703039 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 9050887648383927167, guid: 96f1ffeab42f0ce499b7f40c7898baf7, type: 3}
-  m_PrefabInstance: {fileID: 9050887649002373593}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &816646115
 GameObject:
   m_ObjectHideFlags: 0
@@ -2439,6 +2434,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 9050887648383927155, guid: 96f1ffeab42f0ce499b7f40c7898baf7, type: 3}
   m_PrefabInstance: {fileID: 9050887649002373593}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1137374267 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8594963535667781841, guid: ac7eda934d95f824bb19e7353eca376b, type: 3}
+  m_PrefabInstance: {fileID: 1493304808360800132}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2608bb5b40642724bb93de9039cd29b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1607621242
 GameObject:
   m_ObjectHideFlags: 0
@@ -4675,14 +4681,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8594963535667781841, guid: ac7eda934d95f824bb19e7353eca376b, type: 3}
-      propertyPath: _offset
-      value: 0.0625
-      objectReference: {fileID: 0}
-    - target: {fileID: 8594963535667781841, guid: ac7eda934d95f824bb19e7353eca376b, type: 3}
-      propertyPath: _target
-      value: 
-      objectReference: {fileID: 749703039}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ac7eda934d95f824bb19e7353eca376b, type: 3}
 --- !u!1001 &1604586559637137315
@@ -4922,6 +4920,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9050887648383927166, guid: 96f1ffeab42f0ce499b7f40c7898baf7, type: 3}
+      propertyPath: _playerCursorPointer
+      value: 
+      objectReference: {fileID: 1137374267}
     - target: {fileID: 9050887648383927167, guid: 96f1ffeab42f0ce499b7f40c7898baf7, type: 3}
       propertyPath: m_Name
       value: char_player

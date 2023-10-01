@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2323347911519968886}
   - component: {fileID: 8594963535667781841}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: char_player_cursor_pointer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -46,8 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2608bb5b40642724bb93de9039cd29b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _offset: 2
-  _target: {fileID: 0}
+  _offset: 1
   _arrow: {fileID: 5794650283866717708}
   _arrowShadow: {fileID: 3759061015873373362}
 --- !u!1 &954796817144060373
