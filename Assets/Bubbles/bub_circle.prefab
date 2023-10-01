@@ -49,7 +49,9 @@ MonoBehaviour:
   _screenshakeStrength: 1
   _screenshakeDuration: 0.25
   _audioClips: []
-  _prefabs: []
+  _prefabs:
+  - {fileID: 6138547992841295953, guid: 8cb187e54f85eb5458a32499e4b93c3d, type: 3}
+  - {fileID: 3149061501238307778, guid: 21fcf3b4e4be5a94ca72d5885b8227c1, type: 3}
 --- !u!1 &6537025080770609474
 GameObject:
   m_ObjectHideFlags: 0
