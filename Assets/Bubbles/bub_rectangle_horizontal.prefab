@@ -489,7 +489,7 @@ MonoBehaviour:
   _screenshakeStrength: 1
   _screenshakeDuration: 0.25
   _hitStop: 1
-  _hitStopFrameCount: 4
+  _hitStopFrameCount: 2
   _audioClips:
   - {fileID: 8300000, guid: 0a2bdb5f90c9dc047a0c008e87918c29, type: 3}
   _prefabs:
