@@ -1,9 +1,5 @@
 ﻿
 using DDCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace ProjectBubble.Core
@@ -11,6 +7,9 @@ namespace ProjectBubble.Core
     public class VFX : MonoBehaviour
     {
         [SerializeField] private bool _isRandom;
+        [SerializeField] private bool _screenshake;
+        [SerializeField] private int _screenshakeStrength;
+        [SerializeField] private float _screenshakeDuration;
         [SerializeField] private AudioClip[] _audioClips;
         [SerializeField] private GameObject[] _prefabs;
 
@@ -18,7 +17,7 @@ namespace ProjectBubble.Core
         {
             if (_isRandom)
             {
-                if(_prefabs.Length > 0)
+                if (_prefabs.Length > 0)
                 {
                     int prefabIndex = Random.Range(0, _prefabs.Length);
                     GameObject prefab = _prefabs[prefabIndex];
@@ -26,7 +25,7 @@ namespace ProjectBubble.Core
                     instance.transform.position = worldPosition;
                 }
 
-                if(_audioClips.Length > 0)
+                if (_audioClips.Length > 0)
                 {
                     int audioClipIndex = Random.Range(0, _audioClips.Length);
                     AudioClip audioClip = _audioClips[audioClipIndex];
@@ -35,18 +34,23 @@ namespace ProjectBubble.Core
             }
             else
             {
-                for(int i = 0; i < _prefabs.Length; i++)
+                for (int i = 0; i < _prefabs.Length; i++)
                 {
                     GameObject prefab = _prefabs[i];
                     GameObject instance = Instantiate(prefab, worldPosition, prefab.transform.rotation);
                     instance.transform.position = worldPosition;
                 }
 
-                for(int i = 0; i < _audioClips.Length; i++)
+                for (int i = 0; i < _audioClips.Length; i++)
                 {
                     AudioClip audioClip = _audioClips[i];
                     AudioManager.PlaySound(audioClip);
                 }
+            }
+
+            if (_screenshake)
+            {
+                MainCamera.Screenshake(_screenshakeStrength, _screenshakeDuration);
             }
         }
     }
