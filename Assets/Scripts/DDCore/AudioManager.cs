@@ -11,6 +11,7 @@ namespace DDCore
         private static float _soundVolume = 1f;
         private static float _musicVolume = 1f;
         private static AudioManager _instance;
+        [SerializeField] private AudioMixer _audioMixer;
         [SerializeField] private float _maxPitchVariation = 0.05f;
         private void OnEnable()
         {
@@ -28,10 +29,13 @@ namespace DDCore
             _instance = this;
             _audioSources = new AudioSource[MAX_AUDIO_SOURCE_COUNT];
             _musicSource = gameObject.AddComponent<AudioSource>();
+            _musicSource.outputAudioMixerGroup = _audioMixer.outputAudioMixerGroup;
             _musicSource.loop = true;
             for (int i = 0; i < _audioSources.Length; i++)
             {
+    
                 _audioSources[i] = gameObject.AddComponent<AudioSource>();
+                _audioSources[i].outputAudioMixerGroup = _audioMixer.outputAudioMixerGroup;
             }
 
             DontDestroyOnLoad(gameObject);
@@ -71,7 +75,7 @@ namespace DDCore
 
             targetSource.volume = _soundVolume;
             targetSource.clip = audioClip;
-            targetSource.pitch = Random.Range(-audioManager._maxPitchVariation, audioManager._maxPitchVariation);
+            targetSource.pitch = 1f + Random.Range(-audioManager._maxPitchVariation, audioManager._maxPitchVariation);
             targetSource.Play();
         }
 

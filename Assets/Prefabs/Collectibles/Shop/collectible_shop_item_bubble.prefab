@@ -35,6 +35,7 @@ Transform:
   - {fileID: 8149387997337522968}
   - {fileID: 7916191818594703820}
   - {fileID: 4355727537163655128}
+  - {fileID: 958174669635474083}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -92,6 +93,7 @@ MonoBehaviour:
   _spawnTime: 0.5
   _arcHeight: 7
   _spriteWhite: {fileID: 2100000, guid: c76f3c36428ce0946b242da235de1224, type: 2}
+  _collectVFX: {fileID: 3830383740821906441}
   _state: 2
   _minCost: 10
   _maxCost: 50
@@ -355,6 +357,59 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
+--- !u!1 &4808976762594850875
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 958174669635474083}
+  - component: {fileID: 3830383740821906441}
+  m_Layer: 9
+  m_Name: vfx_collect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &958174669635474083
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4808976762594850875}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 3, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6452630658832784361}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3830383740821906441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4808976762594850875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f09bcd945cd6b740aa497a9b96d8a4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isRandom: 0
+  _screenshake: 0
+  _screenshakeStrength: 0
+  _screenshakeDuration: 0
+  _hitStop: 0
+  _hitStopFrameCount: 0
+  _audioClips:
+  - {fileID: 8300000, guid: 2d5cfc2971353dd4197860344a842e89, type: 3}
+  _prefabs: []
 --- !u!1 &4818883354100751862
 GameObject:
   m_ObjectHideFlags: 0

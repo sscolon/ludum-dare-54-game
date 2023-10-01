@@ -64,6 +64,59 @@ Transform:
   m_Father: {fileID: 2594505912403937918}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3121630223158901702
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5845413803105612249}
+  - component: {fileID: 773571187558596671}
+  m_Layer: 0
+  m_Name: vfx_hit
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5845413803105612249
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3121630223158901702}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9050887648383927155}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &773571187558596671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3121630223158901702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f09bcd945cd6b740aa497a9b96d8a4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isRandom: 0
+  _screenshake: 1
+  _screenshakeStrength: 1
+  _screenshakeDuration: 0.25
+  _hitStop: 1
+  _hitStopFrameCount: 8
+  _audioClips:
+  - {fileID: 8300000, guid: 518125a93994d794da1222c6b0bfe693, type: 3}
+  _prefabs: []
 --- !u!1 &3225254144552067928
 GameObject:
   m_ObjectHideFlags: 0
@@ -407,6 +460,7 @@ Transform:
   - {fileID: 6382704075251522058}
   - {fileID: 8661767412602002275}
   - {fileID: 2337107422875128123}
+  - {fileID: 5845413803105612249}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -464,6 +518,7 @@ MonoBehaviour:
   _spawnWeight: 0
   _health: 5
   _maxHealth: 5
+  _hitVFX: {fileID: 773571187558596671}
   _starterBubble: {fileID: 11400000, guid: 0ab314f041aae4b49848189807a02dc7, type: 2}
   _movementSpeed: 7.7
   _acceleration: 8

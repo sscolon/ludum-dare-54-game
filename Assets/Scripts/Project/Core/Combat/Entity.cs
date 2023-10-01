@@ -19,6 +19,7 @@ namespace ProjectBubble.Core.Combat
         [Header("Stats")]
         [SerializeField] private float _health;
         [SerializeField] private float _maxHealth;
+        [SerializeField] private VFX _hitVFX;
         public float Health
         {
             get
@@ -61,6 +62,7 @@ namespace ProjectBubble.Core.Combat
                 return;
             Health -= damage;
             //We can put VFX and stuff here later.
+            _hitVFX?.Play(transform.position);
             OnDamaged?.Invoke();
             if (Health <= 0)
             {

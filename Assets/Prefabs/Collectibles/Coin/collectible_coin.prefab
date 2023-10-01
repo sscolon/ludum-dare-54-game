@@ -229,6 +229,7 @@ MonoBehaviour:
   _spawnTime: 0.5
   _arcHeight: 3
   _spriteWhite: {fileID: 2100000, guid: c76f3c36428ce0946b242da235de1224, type: 2}
+  _collectVFX: {fileID: 0}
   _state: 2
   _value: 1
 --- !u!95 &6862760019433544456

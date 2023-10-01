@@ -1,4 +1,5 @@
 ﻿using DDCore;
+using ProjectBubble.Core;
 using ProjectBubble.Core.Collectibles;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,6 +25,7 @@ namespace ProjectBubble.Content.Collectibles
         [SerializeField] private float _spawnTime;
         [SerializeField] private float _arcHeight;
         [SerializeField] private Material _spriteWhite;
+        [SerializeField] private VFX _collectVFX;
         [SerializeField] private CollectibleState _state;
         protected virtual void Start()
         {
@@ -101,6 +103,7 @@ namespace ProjectBubble.Content.Collectibles
         {
             _state = CollectibleState.Collecting;
             _spriteRenderer.material = _spriteWhite;
+            _collectVFX?.Play(transform.position);
         }
 
         public enum CollectibleState

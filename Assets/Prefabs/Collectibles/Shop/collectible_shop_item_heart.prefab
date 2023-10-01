@@ -1,5 +1,58 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2641803873630902788
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 265273985159202980}
+  - component: {fileID: 6757000487715996898}
+  m_Layer: 9
+  m_Name: vfx_collect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &265273985159202980
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2641803873630902788}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 3, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9089266801156723566}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6757000487715996898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2641803873630902788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f09bcd945cd6b740aa497a9b96d8a4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isRandom: 0
+  _screenshake: 0
+  _screenshakeStrength: 0
+  _screenshakeDuration: 0
+  _hitStop: 0
+  _hitStopFrameCount: 0
+  _audioClips:
+  - {fileID: 8300000, guid: 2d5cfc2971353dd4197860344a842e89, type: 3}
+  _prefabs: []
 --- !u!1 &2804530940448278903
 GameObject:
   m_ObjectHideFlags: 0
@@ -35,6 +88,7 @@ Transform:
   - {fileID: 3837393907100038589}
   - {fileID: 424900605983306267}
   - {fileID: 949711932185314000}
+  - {fileID: 265273985159202980}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -92,6 +146,7 @@ MonoBehaviour:
   _spawnTime: 0.5
   _arcHeight: 7
   _spriteWhite: {fileID: 2100000, guid: c76f3c36428ce0946b242da235de1224, type: 2}
+  _collectVFX: {fileID: 6757000487715996898}
   _state: 2
   _minCost: 5
   _maxCost: 20
