@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxWave: 15
   _restWaveDivisor: 5
-  _restTime: 1
+  _restTime: 12
   _minEnemySpawnTime: 1
   _maxEnemySpawnTime: 2
   _enemyCounts:

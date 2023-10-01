@@ -1,4 +1,5 @@
 ﻿using DDCore;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -32,6 +33,10 @@ namespace ProjectBubble.Core
         [SerializeField] private int _maxBonusShopItemCount;
         [SerializeField] private GameObject[] _requiredShopItemPrefabs;
         [SerializeField] private GameObject[] _bonusShopItemPrefabs;
+
+        public static event Action OnRestStart;
+        public static event Action OnRestStop;
+        public static event Action<float> OnRestCountdown;
         private void Start()
         {
             _prefabsToInstantiate = new Queue<GameObject>();
@@ -65,6 +70,7 @@ namespace ProjectBubble.Core
                     break;
                 case State.Rest:
                     _elapsedRestTime += Time.deltaTime;
+                    OnRestCountdown?.Invoke(_restTime - _elapsedRestTime);
                     if (_elapsedRestTime >= _restTime)
                     {
                         NextWave();
@@ -102,7 +108,7 @@ namespace ProjectBubble.Core
                 }
             }
 
-            Vector3Int spawnPosition = spawnPositions[Random.Range(0, spawnPositions.Count)];
+            Vector3Int spawnPosition = spawnPositions[UnityEngine.Random.Range(0, spawnPositions.Count)];
             return spawnPosition;
         }
 
@@ -153,7 +159,7 @@ namespace ProjectBubble.Core
                 }
             }
 
-            float randomWeight = Random.Range(0, totalWeight);
+            float randomWeight = UnityEngine.Random.Range(0, totalWeight);
             float currentWeight = 0;
             for (int i = 0; i < _waveBehaviours.Length; i++)
             {
@@ -180,14 +186,14 @@ namespace ProjectBubble.Core
             {
                 int min = _enemyCounts[_waveIndex].x;
                 int max = _enemyCounts[_waveIndex].y;
-                _enemyCount = Random.Range(min, max);
+                _enemyCount = UnityEngine.Random.Range(min, max);
             }
             else
             {
                 //Default to final wave.
                 int min = _enemyCounts[_enemyCounts.Length - 1].x;
                 int max = _enemyCounts[_enemyCounts.Length - 1].y;
-                _enemyCount = Random.Range(min, max);
+                _enemyCount = UnityEngine.Random.Range(min, max);
             }
 
             //Gradually get faster as the waves progress.
@@ -206,7 +212,7 @@ namespace ProjectBubble.Core
                 {
                     _state = State.Rest;
                     _elapsedRestTime = 0;
-                    int bonusShopItemCount = Random.Range(_minBonusShopItemCount, _maxBonusShopItemCount);
+                    int bonusShopItemCount = UnityEngine.Random.Range(_minBonusShopItemCount, _maxBonusShopItemCount);
                     for (int r = 0; r < _requiredShopItemPrefabs.Length; r++)
                     {
                         SpawnPrefab(_requiredShopItemPrefabs[r]);
@@ -214,13 +220,16 @@ namespace ProjectBubble.Core
 
                     for (int s = 0; s < bonusShopItemCount; s++)
                     {
-                        int rand = Random.Range(0, _bonusShopItemPrefabs.Length);
+                        int rand = UnityEngine.Random.Range(0, _bonusShopItemPrefabs.Length);
                         GameObject prefab = _bonusShopItemPrefabs[rand];
                         SpawnPrefab(prefab);
                     }
+                    OnRestStart?.Invoke();
                 }
                 else
                 {
+                    if (_state == State.Rest)
+                        OnRestStop?.Invoke();
                     _state = State.Combat;
                     int count = _enemyCount;
                     for (int e = 0; e < count; e++)
