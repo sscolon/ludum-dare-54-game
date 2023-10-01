@@ -462,8 +462,8 @@ MonoBehaviour:
   _minSpawnWave: 0
   _maxSpawnWave: -1
   _spawnWeight: 0
-  _health: 3
-  _maxHealth: 0
+  _health: 5
+  _maxHealth: 5
   _starterBubble: {fileID: 11400000, guid: 0ab314f041aae4b49848189807a02dc7, type: 2}
   _movementSpeed: 7.5
   _acceleration: 8

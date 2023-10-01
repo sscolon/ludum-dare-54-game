@@ -7,9 +7,16 @@ namespace ProjectBubble.Core
     public class VFX : MonoBehaviour
     {
         [SerializeField] private bool _isRandom;
+
+        [Header("ScreenShake")]
         [SerializeField] private bool _screenshake;
         [SerializeField] private int _screenshakeStrength;
         [SerializeField] private float _screenshakeDuration;
+
+        [Header("HitStop")]
+        [SerializeField] private bool _hitStop;
+        [SerializeField] private int _hitStopFrameCount;
+
         [SerializeField] private AudioClip[] _audioClips;
         [SerializeField] private GameObject[] _prefabs;
 
@@ -51,6 +58,11 @@ namespace ProjectBubble.Core
             if (_screenshake)
             {
                 MainCamera.Screenshake(_screenshakeStrength, _screenshakeDuration);
+            }
+
+            if (_hitStop)
+            {
+                VFXUtil.DoHitStop(_hitStopFrameCount);
             }
         }
     }

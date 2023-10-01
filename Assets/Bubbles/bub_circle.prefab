@@ -48,6 +48,8 @@ MonoBehaviour:
   _screenshake: 1
   _screenshakeStrength: 1
   _screenshakeDuration: 0.25
+  _hitStop: 1
+  _hitStopFrameCount: 4
   _audioClips: []
   _prefabs:
   - {fileID: 6138547992841295953, guid: 8cb187e54f85eb5458a32499e4b93c3d, type: 3}

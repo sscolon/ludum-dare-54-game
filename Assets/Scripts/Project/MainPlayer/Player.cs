@@ -56,6 +56,7 @@ namespace ProjectBubble.MainPlayer
         private void Update()
         {
             SetInput();
+            SetCursorPointer();
             SetRunInterpolation();
             SetIdleScale();
             SetFlipperScale();
@@ -75,7 +76,7 @@ namespace ProjectBubble.MainPlayer
                     if (World.Ground.HasTile(tile))
                         tileCount++;
                 }
-                DebugWrapper.Log($"Tile Count: {tileCount}");
+       //         DebugWrapper.Log($"Tile Count: {tileCount}");
             }
         }
 
@@ -93,7 +94,7 @@ namespace ProjectBubble.MainPlayer
         private void SetOrbitingBubblePositions()
         {
             const float Orbiting_Speed = 200;
-            const float Orbiting_Radius = 1.5f;
+            const float Orbiting_Radius = 2f;
             _deltaOffset += Time.deltaTime * Orbiting_Speed;
             for (int i = 0; i < _orbitingBubbles.Count; i++)
             {
@@ -109,6 +110,14 @@ namespace ProjectBubble.MainPlayer
         {
             _inputX = Input.GetAxisRaw("Horizontal");
             _inputY = Input.GetAxisRaw("Vertical");
+        }
+
+        private void SetCursorPointer()
+        {
+            if (_bubbleQueue.Count <= 0)
+                return;
+            Bubble bubble = _bubbleQueue.Peek();
+            _playerCursorPointer.Target = bubble.transform;
         }
 
         private void SetRunInterpolation()
@@ -196,7 +205,6 @@ namespace ProjectBubble.MainPlayer
 
         private void OnCatchBubble(Bubble bubble)
         {
-            _bubbleQueue.Enqueue(bubble);
             _orbitingBubbles.Add(bubble);
         }
 
@@ -205,15 +213,15 @@ namespace ProjectBubble.MainPlayer
             if (_bubbleQueue.Count <= 0)
                 return;
 
-            Bubble bubble = _bubbleQueue.Dequeue();
-            if(_bubbleQueue.TryPeek(out Bubble next))
+            Bubble bubble = _bubbleQueue.Peek();
+            if (bubble.HasCatch())
             {
-                _playerCursorPointer.Target = next.transform;
+                _bubbleQueue.Dequeue();
+                OnDequeue?.Invoke(bubble);
             }
 
             _orbitingBubbles.Remove(bubble);
-            OnDequeue?.Invoke(bubble);
-
+    
             Vector3 mouseWorld = Util.GetMouseWorldPosition();
             Bubble.Type bubbleType = bubble.HasCatch() ? Bubble.Type.Release : Bubble.Type.Catch;
             bubble.Fire(bubbleType, mouseWorld);
@@ -221,7 +229,9 @@ namespace ProjectBubble.MainPlayer
 
         public override void TakeDamage(float damage)
         {
+            damage = 1;
             base.TakeDamage(damage);
+            VFXUtil.DoSpriteFlash(gameObject);
             ScoreManager.ModifyScore(_damagePenalty);
         }
 

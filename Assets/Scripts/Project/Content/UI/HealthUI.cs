@@ -1,4 +1,5 @@
 ﻿using ProjectBubble.Core.Combat;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +13,7 @@ namespace ProjectBubble.Content.UI
         [SerializeField] private Image _heartPrefab;
         [SerializeField] private Sprite _heartFilled;
         [SerializeField] private Sprite _heartEmpty;
+        [SerializeField] private Material _spriteWhite;
         private void Start()
         {
             _hearts = new List<Image>();
@@ -47,6 +49,8 @@ namespace ProjectBubble.Content.UI
                     _hearts[i].sprite = _heartEmpty;
                 }
             }
+
+            StartCoroutine(DoSexyJiggle());
         }
 
         private void UpdateMaxUI(float maxValue)
@@ -64,6 +68,27 @@ namespace ProjectBubble.Content.UI
             {
                 Destroy(_hearts[_hearts.Count - 1]);
                 _hearts.RemoveAt(_hearts.Count - 1);
+            }
+
+            StartCoroutine(DoSexyJiggle());
+        }
+
+        private IEnumerator DoSexyJiggle()
+        {
+            const float Jiggle_Speed = 2f;
+            float elapsedTime = 0f;
+            while (elapsedTime < 1f)
+            {
+                elapsedTime += Time.deltaTime * Jiggle_Speed;
+                Vector3 startScale = Vector3.one;
+                Vector3 midScale = new Vector3(1.5f, 1.5f, 1.5f);
+                Vector3 endScale = Vector3.one;
+
+                Vector3 s1 = Vector3.Lerp(startScale, midScale, elapsedTime);
+                Vector3 s2 = Vector3.Lerp(midScale, endScale, elapsedTime);
+                Vector3 scale = Vector3.Lerp(s1, s2, elapsedTime);
+                transform.localScale = scale;
+                yield return null;
             }
         }
     }

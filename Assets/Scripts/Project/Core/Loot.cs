@@ -6,18 +6,43 @@ namespace ProjectBubble.Core
     public class Loot : ScriptableObject
     {
         [SerializeField] private int _count;
-        [SerializeField] private GameObject[] _prefabs;
+        [SerializeField] private Entry[] _prefabs;
+        private Entry NextEntry()
+        {
+            float totalWeight = 0;
+            for (int i = 0; i < _prefabs.Length; i++)
+            {
+                var entry = _prefabs[i];
+                totalWeight += entry.weight * 1000;
+            }
+
+            float randomWeight = Random.Range(0, totalWeight);
+            float currentWeight = 0;
+            for (int i = 0; i < _prefabs.Length; i++)
+            {
+                var entry = _prefabs[i];
+                currentWeight += entry.weight * 1000;
+                if (randomWeight <= currentWeight)
+                {
+                    return entry;
+                }
+            }
+
+            return null;
+        }
+
         public void Instantiate(Vector3 position)
         {
             const float Max_Speed = 10;
             for (int i = 0; i < _count; i++)
             {
-                GameObject prefab = _prefabs[Random.Range(0, _prefabs.Length)];
-                if (prefab == null)
+                Entry entry = NextEntry();
+                if (entry == null)
+                    continue;
+                if (entry.prefab == null)
                     continue;
 
-                GameObject instance = GameObject.Instantiate(prefab, position, prefab.transform.rotation);
-
+                GameObject instance = GameObject.Instantiate(entry.prefab, position, entry.prefab.transform.rotation);
                 float randX = Random.Range(-1f, 1f);
                 float randY = Random.Range(-1f, 1f);
                 float speed = Random.Range(-Max_Speed, Max_Speed);
@@ -30,6 +55,15 @@ namespace ProjectBubble.Core
                     body.AddForce(force, ForceMode2D.Impulse);
                 }
             }
+        }
+
+        [System.Serializable]
+        private class Entry
+        {
+            public GameObject prefab;
+
+            [Range(0.00f, 1.00f)]
+            public float weight;
         }
     }
 }

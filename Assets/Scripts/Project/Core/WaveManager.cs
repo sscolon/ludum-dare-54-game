@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using DDCore;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -89,9 +90,13 @@ namespace ProjectBubble.Core
             //There'll be a sound effect and particle effect before the enemy spawns.
             Tilemap ground = World.Ground;
             List<Vector3Int> spawnPositions = new();
+            Vector3 cameraPos = Util.GetMainCamera().transform.position;
+            cameraPos.z = 0.0f;
+            Vector3Int cameraTile = Vector3Int.RoundToInt(cameraPos);
+            const float Threshold = 10;
             foreach (var cellPosition in ground.cellBounds.allPositionsWithin)
             {
-                if (ground.HasTile(cellPosition))
+                if (ground.HasTile(cellPosition) && Vector3Int.Distance(cellPosition, cameraTile) <= Threshold)
                 {
                     spawnPositions.Add(cellPosition);
                 }

@@ -20,7 +20,7 @@ namespace ProjectBubble.Content.UI
 
         private void UpdateUI(float score)
         {
-            _tmpScore.text = $"{score}";
+            _tmpScore.text = $"Score - {score}";
         }
     }
 }

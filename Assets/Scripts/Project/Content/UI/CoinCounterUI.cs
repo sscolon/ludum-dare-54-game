@@ -8,6 +8,7 @@ namespace ProjectBubble.Content.UI
     public class CoinCounterUI : MonoBehaviour
     {
         [SerializeField] private TMP_Text _tmpCount;
+        [SerializeField] private TMP_Text _tmpCountShadow;
         [SerializeField] private GameObject _target;
         private void Start()
         {
@@ -31,6 +32,7 @@ namespace ProjectBubble.Content.UI
                 return;
             int coinCount = collectibleIndex[CollectibleID.Coins];
             _tmpCount.text = $"{coinCount}";
+            _tmpCountShadow.text = _tmpCount.text;
         }
     }
 }
