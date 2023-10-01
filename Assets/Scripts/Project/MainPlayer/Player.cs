@@ -55,28 +55,15 @@ namespace ProjectBubble.MainPlayer
 
         private void Update()
         {
-            SetInput();
+            GetPlayerInput();
             SetCursorPointer();
             SetRunInterpolation();
             SetIdleScale();
             SetFlipperScale();
             SetOrbitingBubblePositions();
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
-                NextBubble();
-            }
-            if (Input.GetKeyDown(KeyCode.LeftShift))
-            {
-                if (_tauntRoutine != null)
-                    StopCoroutine(_tauntRoutine);
-                _tauntRoutine = StartCoroutine(Taunt());
-                int tileCount = 0;
-                foreach (Vector3Int tile in World.Ground.cellBounds.allPositionsWithin)
-                {
-                    if (World.Ground.HasTile(tile))
-                        tileCount++;
-                }
-       //         DebugWrapper.Log($"Tile Count: {tileCount}");
+                TogglePause();
             }
         }
 
@@ -89,6 +76,18 @@ namespace ProjectBubble.MainPlayer
 
             //Just call it every frame, overlap circle isn't expensive anyway.
             Collect();
+        }
+
+        private void TogglePause()
+        {
+            if (PauseManager.IsPaused())
+            {
+                PauseManager.UnPause();
+            }
+            else
+            {
+                PauseManager.Pause();
+            } 
         }
 
         private void SetOrbitingBubblePositions()
@@ -106,10 +105,22 @@ namespace ProjectBubble.MainPlayer
             }
         }
 
-        private void SetInput()
+        private void GetPlayerInput()
         {
+            if (PauseManager.IsPaused())
+                return;
             _inputX = Input.GetAxisRaw("Horizontal");
             _inputY = Input.GetAxisRaw("Vertical");
+            if (Input.GetMouseButtonDown(0))
+            {
+                NextBubble();
+            }
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                if (_tauntRoutine != null)
+                    StopCoroutine(_tauntRoutine);
+                _tauntRoutine = StartCoroutine(Taunt());
+            }
         }
 
         private void SetCursorPointer()

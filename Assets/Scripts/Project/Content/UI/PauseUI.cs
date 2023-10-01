@@ -34,5 +34,10 @@ namespace ProjectBubble.Content.UI
             //VFX later
             _rootParent.gameObject.SetActive(false);
         }
+
+        public void Resume()
+        {
+            PauseManager.UnPause();
+        }
     }
 }
