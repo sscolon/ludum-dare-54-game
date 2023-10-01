@@ -32,10 +32,11 @@ namespace ProjectBubble.Core
         private IEnumerator ArcRoutine()
         {
             const float Arc_Speed = 2.25f;
+            float arcSpeed = Arc_Speed + UnityEngine.Random.Range(-1f, 1f);
             float rotation = UnityEngine.Random.Range(-360f, 360f);
             while(_elapsedTime < 1f)
             {
-                _elapsedTime += Time.deltaTime * Arc_Speed;
+                _elapsedTime += Time.deltaTime * arcSpeed;
                 float startHeight = 0;
                 float midHeight = ArcHeight;
                 float endHeight = 0;
@@ -59,7 +60,7 @@ namespace ProjectBubble.Core
             _elapsedTime = 0f;
             while(_elapsedTime < 1f)
             {
-                _elapsedTime += Time.deltaTime * Arc_Speed;
+                _elapsedTime += Time.deltaTime * arcSpeed;
                 float easedTime = Easing.Calculate(_elapsedTime, EaseType.Out_Cubic);
                 _spriteRenderer.transform.localScale = Vector3.Lerp(startScale, endScale, easedTime);
                 yield return null;
