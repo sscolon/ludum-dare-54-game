@@ -36,6 +36,30 @@ namespace ProjectBubble.Content.Projectiles
                 projectile.Right = dir;
             }
         }
+        public static void CreateForwardProjectiles(Transform origin, Transform[] transforms, int projectileCount, float projectileSpread, float randomSpread = 0)
+        {
+            ProjectileManager projectileManager = _instance;
+
+            foreach(Transform transform in transforms)
+            {
+                for (int i = 0; i < projectileCount; i++)
+                {
+                    float rand = UnityEngine.Random.Range(-randomSpread, randomSpread);
+                    float spread = projectileSpread + rand;
+                    float targetAngle = (spread / projectileCount);
+                    float angle = (i * targetAngle) - (targetAngle * (projectileCount / 2));
+                    if (projectileCount == 1)
+                    {
+                        angle = 0 + rand;
+                    }
+
+                    Vector3 direction = (transform.position - origin.position).normalized;
+                    Vector3 dir = direction + Quaternion.Euler(0, 0, angle) * direction;
+                    Projectile projectile = Instantiate(projectileManager._projectilePrefab, transform.position, projectileManager._projectilePrefab.transform.rotation);
+                    projectile.Right = dir;
+                }
+            }
+        }
 
         public static void CreateProjectileBurst(Vector3 startPosition, int projectileCount, float radius = 1, float randomSpread = 0)
         {

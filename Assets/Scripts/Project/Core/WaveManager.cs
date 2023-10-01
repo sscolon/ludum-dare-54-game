@@ -27,6 +27,7 @@ namespace ProjectBubble.Core
         [SerializeField] private float _maxEnemySpawnTime;
         [SerializeField] private Vector2Int[] _enemyCounts;
         [SerializeField] private GameObject[] _prefabs;
+        [SerializeField] private VFX _spawnVFX;
 
         [Header("Rest Wave")]
         [SerializeField] private int _minBonusShopItemCount;
@@ -135,6 +136,7 @@ namespace ProjectBubble.Core
             Vector3 worldPosition = tilePosition;
             worldPosition += new Vector3(0.5f, 0.5f);
             GameObject instance = GameObject.Instantiate(prefab, worldPosition, prefab.transform.rotation);
+            _spawnVFX?.Play(worldPosition);
             return instance;
         }
 

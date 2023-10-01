@@ -5,7 +5,8 @@ namespace ProjectBubble.Core
     [CreateAssetMenu(menuName = "ProjectBubble/Loot")]
     public class Loot : ScriptableObject
     {
-        [SerializeField] private int _count;
+        [SerializeField] private int _minCount = 1;
+        [SerializeField] private int _maxCount = 5;
         [SerializeField] private Entry[] _prefabs;
         private Entry NextEntry()
         {
@@ -34,7 +35,8 @@ namespace ProjectBubble.Core
         public void Instantiate(Vector3 position)
         {
             const float Max_Speed = 10;
-            for (int i = 0; i < _count; i++)
+            int count = Random.Range(_minCount, _maxCount);
+            for (int i = 0; i < count; i++)
             {
                 Entry entry = NextEntry();
                 if (entry == null)

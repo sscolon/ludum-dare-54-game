@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5273282061482836041}
   - component: {fileID: 5273282061482836040}
+  - component: {fileID: 8512694557057705789}
   m_Layer: 0
   m_Name: manager_waves
   m_TagString: Untagged
@@ -47,8 +48,8 @@ MonoBehaviour:
   _maxWave: 15
   _restWaveDivisor: 5
   _restTime: 12
-  _minEnemySpawnTime: 1
-  _maxEnemySpawnTime: 2
+  _minEnemySpawnTime: 1.5
+  _maxEnemySpawnTime: 2.5
   _enemyCounts:
   - {x: 1, y: 2}
   - {x: 1, y: 2}
@@ -60,10 +61,16 @@ MonoBehaviour:
   - {x: 5, y: 7}
   - {x: 5, y: 8}
   - {x: 5, y: 9}
-  - {x: 10, y: 10}
+  - {x: 6, y: 10}
   _prefabs:
   - {fileID: 5889752795426585444, guid: f6e43d5a8a1bb0d43b159f5afebfecaa, type: 3}
   - {fileID: 5435446286032264380, guid: ba1d621a7e9779d4cae81fd690537290, type: 3}
+  - {fileID: 1835243594982506612, guid: 6646dfec41e94e84d9e0cd58a37b1d20, type: 3}
+  - {fileID: 9028954900319027301, guid: 9db3dc3d302d8684996f586ae5a4f2b3, type: 3}
+  - {fileID: 3046814735736057936, guid: ad3af4ebdd939d74f8583102566622b3, type: 3}
+  - {fileID: 1198409639937203171, guid: 72a6dc28d9b1184439407501301440e5, type: 3}
+  - {fileID: 4820107282780119531, guid: 1adb52ab124bcc241b002acb76b43677, type: 3}
+  _spawnVFX: {fileID: 8512694557057705789}
   _minBonusShopItemCount: 1
   _maxBonusShopItemCount: 2
   _requiredShopItemPrefabs:
@@ -71,3 +78,26 @@ MonoBehaviour:
   _bonusShopItemPrefabs:
   - {fileID: 91308471390323184, guid: f5b61d618e598ab469924328173880c7, type: 3}
   - {fileID: 2804530940448278903, guid: 2fd8968b57ded954eb4dd77203d6f1fb, type: 3}
+--- !u!114 &8512694557057705789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5273282061482836043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f09bcd945cd6b740aa497a9b96d8a4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isRandom: 0
+  _screenshake: 0
+  _screenshakeStrength: 0
+  _screenshakeDuration: 0
+  _hitStop: 0
+  _hitStopFrameCount: 0
+  _audioClips:
+  - {fileID: 8300000, guid: ffa74ff8a14ec73468dc62185a4b9f13, type: 3}
+  _prefabs:
+  - {fileID: 3348627978929979953, guid: d3dbee5c1cf556344b2932f5653b8dac, type: 3}
+  - {fileID: 4869503634299880788, guid: 7d69e43a808adde45b6d1250166b589c, type: 3}

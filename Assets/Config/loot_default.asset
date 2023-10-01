@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52da2e6225ae76341aba8214f2560ac0, type: 3}
   m_Name: loot_default
   m_EditorClassIdentifier: 
-  _count: 7
+  _count: 5
   _prefabs:
   - prefab: {fileID: 0}
     weight: 1

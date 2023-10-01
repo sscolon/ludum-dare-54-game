@@ -20,7 +20,7 @@ namespace ProjectBubble.Content.Enemies
 
         [Header("Cannon Transform")]
         [SerializeField] private Transform _cannon;
-        [SerializeField] private Transform _projectileSpawn;
+        [SerializeField] private Transform[] _projectileSpawns;
         private void Start()
         {
             _fireCountdown = _fireDelay;
@@ -55,8 +55,7 @@ namespace ProjectBubble.Content.Enemies
             switch (_projectileShootType)
             {
                 case ProjectileShootType.Forward:
-                    Vector3 direction = GameManager.DirectionToPlayer(transform.position);
-                    ProjectileManager.CreateForwardProjectiles(_projectileSpawn.position, direction, _projectileCount, _projectileSpread, _projectileRandomSpread);
+                    ProjectileManager.CreateForwardProjectiles(transform, _projectileSpawns, _projectileCount, _projectileSpread, _projectileRandomSpread);
                     break;
                 case ProjectileShootType.Circle:
                     ProjectileManager.CreateProjectileBurst(transform.position, _projectileCount, randomSpread: _projectileRandomSpread);
