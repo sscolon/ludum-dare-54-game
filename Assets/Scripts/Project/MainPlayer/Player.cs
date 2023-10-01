@@ -5,7 +5,9 @@ using ProjectBubble.Core.Combat;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace ProjectBubble.MainPlayer
 {
@@ -63,6 +65,7 @@ namespace ProjectBubble.MainPlayer
             SetIdleScale();
             SetFlipperScale();
             SetOrbitingBubblePositions();
+            SetOutOfBounds();
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 TogglePause();
@@ -174,6 +177,35 @@ namespace ProjectBubble.MainPlayer
                 _flipperTransform.localScale = Vector3.one;
             }
         }
+
+        private void SetOutOfBounds()
+        {
+            if (IsOutOfBounds() && gameObject.activeSelf)
+            {
+                //Get Nearest Tile
+                Tilemap tilemap = World.Ground;
+                const int SEARCH_RANGE = 20;
+                Vector3Int startTilePosition = tilemap.WorldToCell(transform.position);
+                List<Vector3Int> availablePositions = new();
+                for (int x = -SEARCH_RANGE; x < SEARCH_RANGE; x++)
+                {
+                    for (int y = -SEARCH_RANGE; y < SEARCH_RANGE; y++)
+                    {
+                        Vector3Int offset = new Vector3Int(x, y, 0);
+                        Vector3Int proposedTilePosition = startTilePosition + offset;
+                        if (!tilemap.HasTile(proposedTilePosition))
+                            continue;
+
+                        availablePositions.Add(proposedTilePosition);
+                    }
+                }
+
+                availablePositions = availablePositions.OrderBy(x => Vector3Int.Distance(startTilePosition, x)).ToList();
+                Vector3Int tilePosition = availablePositions[0];
+                transform.position = new Vector3(tilePosition.x + 0.5f, tilePosition.y + 0.5f, 0);
+            }
+        }
+
         private IEnumerator Taunt()
         {
             const float Taunt_Speed = 3f;
@@ -233,6 +265,13 @@ namespace ProjectBubble.MainPlayer
         private void OnCatchBubble(Bubble bubble)
         {
             _orbitingBubbles.Add(bubble);
+        }
+
+        private bool IsOutOfBounds()
+        {
+            Tilemap map = World.Ground;
+            Vector3Int tilePosition = map.WorldToCell(transform.position);
+            return !map.HasTile(tilePosition);
         }
 
         private void NextBubble()
