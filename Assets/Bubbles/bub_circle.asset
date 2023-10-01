@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: bub_circle
   m_EditorClassIdentifier: 
   title: Round Bubble
-  wrapper: {fileID: 0}
+  icon: {fileID: 21300000, guid: 6f8e8ff0848889542b9a5a893be3f8ab, type: 3}
   prefab: {fileID: 7801577377017947764, guid: 72c34b692b289aa43a08d19df0f7f51f, type: 3}

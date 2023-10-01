@@ -96,8 +96,10 @@ MonoBehaviour:
   _minCost: 10
   _maxCost: 50
   _priceTmp: {fileID: 5968685643301779302}
+  _spriteRenderer: {fileID: 4999568649720226024}
   _bubblesToSell:
   - {fileID: 11400000, guid: 0ab314f041aae4b49848189807a02dc7, type: 2}
+  - {fileID: 11400000, guid: 4c7ccae00a07aff4ca2d6a02340c3935, type: 2}
 --- !u!1 &440595349909538964
 GameObject:
   m_ObjectHideFlags: 0
@@ -338,8 +340,8 @@ SpriteRenderer:
   m_SortingLayerID: -528539143
   m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: e53dc420a68525440a6d2d72b0411dc1, type: 3}
-  m_Color: {r: 0, g: 0.35329103, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 6f8e8ff0848889542b9a5a893be3f8ab, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

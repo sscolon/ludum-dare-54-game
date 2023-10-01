@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: bub_square
   m_EditorClassIdentifier: 
   title: Square Bubble
-  wrapper: {fileID: 0}
+  icon: {fileID: 21300000, guid: 6253fa3181222e2468e1dfd1ae436dbb, type: 3}
   prefab: {fileID: 958480166225615705, guid: 05ce2f4d772bd1d49ab39fd22ddfcb8d, type: 3}
