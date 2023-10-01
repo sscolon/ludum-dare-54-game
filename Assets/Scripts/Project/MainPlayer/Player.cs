@@ -241,6 +241,10 @@ namespace ProjectBubble.MainPlayer
                 return;
 
             Bubble bubble = _bubbleQueue.Peek();
+            float distance = Vector3.Distance(transform.position, bubble.transform.position);
+            if (distance > 3)
+                return;
+
             if (bubble.HasCatch())
             {
                 _bubbleQueue.Dequeue();
