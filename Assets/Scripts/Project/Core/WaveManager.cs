@@ -90,7 +90,7 @@ namespace ProjectBubble.Core
             NextWave();
         }
 
-        private Vector3Int GetRandomSpawnPosition(float threshold = 10)
+        private Vector3Int GetRandomSpawnPosition(float minDistance = 10, float maxDistance = 10)
         {
             //TODO: Telegraph it, we'll do this in polishing phase.
             //There'll be a sound effect and particle effect before the enemy spawns.
@@ -101,7 +101,8 @@ namespace ProjectBubble.Core
             Vector3Int cameraTile = Vector3Int.RoundToInt(cameraPos);
             foreach (var cellPosition in ground.cellBounds.allPositionsWithin)
             {
-                if (ground.HasTile(cellPosition) && Vector3Int.Distance(cellPosition, cameraTile) <= threshold)
+                float distance = Vector3Int.Distance(cellPosition, cameraTile);
+                if (ground.HasTile(cellPosition) && distance >= minDistance && distance <= maxDistance)
                 {
                     spawnPositions.Add(cellPosition);
                 }
@@ -114,7 +115,7 @@ namespace ProjectBubble.Core
         private void SpawnEnemy()
         {
             GameObject prefab = _prefabsToInstantiate.Dequeue();
-            GameObject instance = SpawnPrefab(prefab);
+            GameObject instance = SpawnPrefab(prefab, 2);
             IWaveBehaviour waveBehaviour = instance.GetComponent<IWaveBehaviour>();
             waveBehaviour.OnClear += Progress;
             void Progress()
@@ -128,9 +129,9 @@ namespace ProjectBubble.Core
             }
         }
 
-        public GameObject SpawnPrefab(GameObject prefab, float threshold = 10)
+        public GameObject SpawnPrefab(GameObject prefab, float minDistance = 10, float maxDistance = 10)
         {
-            Vector3Int tilePosition = GetRandomSpawnPosition(threshold);
+            Vector3Int tilePosition = GetRandomSpawnPosition(minDistance, maxDistance);
             Vector3 worldPosition = tilePosition;
             worldPosition += new Vector3(0.5f, 0.5f);
             GameObject instance = GameObject.Instantiate(prefab, worldPosition, prefab.transform.rotation);
