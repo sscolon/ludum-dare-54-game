@@ -27,6 +27,10 @@ namespace ProjectBubble.Core.Combat
         [SerializeField] private float _bubbleReleaseDamage;
         [SerializeField] private float _bubbleBurstDamage;
         [SerializeField] private SpriteRenderer _screenshotRenderer;
+
+        [Header("VFX")]
+        [SerializeField] private VFX _catchVFX;
+        [SerializeField] private VFX _releaseVFX;
         public Movement MoveType { get; set; }
         public Vector2 TargetPosition { get; set; }
 
@@ -144,11 +148,9 @@ namespace ProjectBubble.Core.Combat
             switch (_type)
             {
                 case Type.Catch:
-                    DebugWrapper.Log("Catch");
                     StartCoroutine(CatchRoutine());
                     break;
                 case Type.Release:
-                    DebugWrapper.Log("Release");
                     StartCoroutine(ReleaseRoutine());
                     break;
             }
@@ -164,9 +166,10 @@ namespace ProjectBubble.Core.Combat
 
             CalculateBubbledObjects();
             CalculateBubbledTiles();
-
             CatchBubbledObjects();
             CatchBubbledTiles();
+
+            _catchVFX?.Play(transform.position);
             OnCatch?.Invoke(this);
         }
 
@@ -180,6 +183,8 @@ namespace ProjectBubble.Core.Combat
             ReleaseBurst();
             ReleaseBubbledTiles();
             ReleaseBubbledObjects();
+
+            _releaseVFX?.Play(transform.position);
             OnRelease?.Invoke(this);
         }
 
