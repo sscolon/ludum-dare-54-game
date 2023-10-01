@@ -64,23 +64,50 @@ namespace ProjectBubble.Core.Combat
         private void Send()
         {
             //This will make it slow down near the end of its goal.
-            float movementMultiplier = Mathf.Lerp(1f, 0.01f, _travelTime);
-            _travelTime += Time.deltaTime * _movementSpeed * movementMultiplier;
 
-            //Wanna also lerp to the max size.
-            float scale = START_SCALE;
-            if (_travelTime > 0.75f)
+            float scale;
+            switch (_type)
             {
-                float scaleTime = (_travelTime - 0.75f) / 0.25f;
-                scale = Mathf.Lerp(scale, END_SCALE, scaleTime);
-            }
+                case Type.Catch:
+                    float movementMultiplier = Mathf.Lerp(1f, 0.01f, _travelTime);
+                    _travelTime += Time.deltaTime * _movementSpeed * movementMultiplier;
 
-            transform.localScale = new Vector3(scale, scale, scale);
-            transform.position = Vector2.Lerp(_startPosition, TargetPosition, _travelTime);
-            if (_travelTime >= 1f && !_hasCompletedAction)
-            {
-                _hasCompletedAction = true;
-                DoAction();
+                    scale = START_SCALE;
+                    if (_travelTime > 0.75f)
+                    {
+                        float scaleTime = (_travelTime - 0.75f) / 0.25f;
+                        scale = Mathf.Lerp(scale, END_SCALE, scaleTime);
+                    }
+
+                    transform.localScale = new Vector3(scale, scale, scale);
+                    transform.position = Vector2.Lerp(_startPosition, TargetPosition, _travelTime);
+                    if (_travelTime >= 1f && !_hasCompletedAction)
+                    {
+                        _hasCompletedAction = true;
+                        DoAction();
+                    }
+                    break;
+                case Type.Release:
+                    const float Release_Movement_Multiplier = 1f;
+                    const float Release_Scale_Threshold = 0.95f;
+                    float travelMultiplier = Release_Movement_Multiplier + (Vector3.Distance(_startPosition, TargetPosition) / 16);
+                    _travelTime += Time.deltaTime * _movementSpeed * travelMultiplier;
+                   
+                    scale = START_SCALE;
+                 
+                    if (_travelTime > Release_Scale_Threshold)
+                    {
+                        float scaleTime = (_travelTime - Release_Scale_Threshold) / (1 - Release_Scale_Threshold);
+                        scale = Mathf.Lerp(scale, END_SCALE, scaleTime);
+                    }
+                    transform.localScale = new Vector3(scale, scale, scale);
+                    transform.position = Vector2.Lerp(_startPosition, TargetPosition, _travelTime);
+                    if (_travelTime >= 1f && !_hasCompletedAction)
+                    {
+                        _hasCompletedAction = true;
+                        DoAction();
+                    }
+                    break;
             }
         }
 
