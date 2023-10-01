@@ -7,6 +7,7 @@ namespace ProjectBubble.Core
     public class VFX : MonoBehaviour
     {
         [SerializeField] private bool _isRandom;
+        [SerializeField] private bool _playOnStart = false;
 
         [Header("ScreenShake")]
         [SerializeField] private bool _screenshake;
@@ -19,6 +20,14 @@ namespace ProjectBubble.Core
 
         [SerializeField] private AudioClip[] _audioClips;
         [SerializeField] private GameObject[] _prefabs;
+
+        private void Start()
+        {
+            if (_playOnStart)
+            {
+                Play(transform.position);
+            }
+        }
 
         public void Play(Vector3 worldPosition)
         {
