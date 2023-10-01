@@ -66,6 +66,7 @@ namespace ProjectBubble.MainPlayer
                 if (_tauntRoutine != null)
                     StopCoroutine(_tauntRoutine);
                 _tauntRoutine = StartCoroutine(Taunt());
+                ProjectBubble.Core.MainCamera.Screenshake(1, 0.5f);
             }
         }
 
