@@ -222,41 +222,59 @@ namespace ProjectBubble.Core.Combat
         private void ReleaseBubbledTiles()
         {
             Tilemap tilemap = World.Ground;
-            Vector3Int position = new(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y), 0);
+            Vector3Int center = tilemap.WorldToCell(transform.position);
 
+            List<Vector3Int> availablePositions = new();
+            List<Vector3Int> tileBurstPositions = new();
             foreach (BubbledTile bubbledTile in _bubbledTiles)
             {
-                Vector3Int tilePosition = position + bubbledTile.offset;
+                Vector3Int tilePosition = center + bubbledTile.offset;
                 Vector3Int startTilePosition = tilePosition;
 
                 //I'm, just gonna get the nearest tiles lol
                 const int SEARCH_RANGE = 13;
-                if (tilemap.HasTile(tilePosition))
+                if (tilemap.HasTile(tilePosition) || TileBurstManager.IsUsed(tilePosition))
                 {
-                    List<Vector3Int> availablePositions = new List<Vector3Int>();
+                    availablePositions.Clear();
                     for (int x = -SEARCH_RANGE; x < SEARCH_RANGE; x++)
                     {
                         for (int y = -SEARCH_RANGE; y < SEARCH_RANGE; y++)
                         {
                             Vector3Int offset = new Vector3Int(x, y, 0);
-                            Vector3Int proposedTilePosition = tilePosition + offset;
-                            if (!tilemap.HasTile(proposedTilePosition) && !TileBurstManager.IsUsed(proposedTilePosition))
-                            {
-                                availablePositions.Add(tilePosition + offset);
-                            }
+                            Vector3Int proposedTilePosition = startTilePosition + offset;
+                            if (TileBurstManager.IsUsed(proposedTilePosition))
+                                continue;
+                            if (tilemap.HasTile(proposedTilePosition) || tilemap.GetTile(proposedTilePosition) != null)
+                                continue;
+
+                            availablePositions.Add(proposedTilePosition);
                         }
                     }
 
                     availablePositions = availablePositions.OrderBy(x => Vector3Int.Distance(tilePosition, x)).ToList();
-                    tilePosition = availablePositions[0];
+                    tilePosition = availablePositions[0]; 
                 }
 
-                TileBase tile = bubbledTile.tile;
-                TileBurstManager.Burst(transform.position, new Vector3(tilePosition.x + 0.5f, tilePosition.y + 0.5f, 0), 
-                    () => ReleaseTile(tilePosition, tile));
+                if (tileBurstPositions.Contains(tilePosition))
+                {
+                    DebugWrapper.LogError($"Tile Burst Positions already has that! {tilePosition}");
+                }
+              
                 TileBurstManager.UseTile(tilePosition);
+                tileBurstPositions.Add(tilePosition);
             }
 
+
+            for(int i = 0; i < tileBurstPositions.Count; i++)
+            {
+                Vector3Int tileBurstPosition = tileBurstPositions[i];
+                TileBase tile = _bubbledTiles[i].tile;
+                TileBurstManager.Burst(transform.position, new Vector3(tileBurstPosition.x + 0.5f, tileBurstPosition.y + 0.5f, 0),
+                    () => ReleaseTile(tileBurstPosition, tile));
+            }
+
+
+            tileBurstPositions.Clear();
             _bubbledTiles.Clear();
         }
 

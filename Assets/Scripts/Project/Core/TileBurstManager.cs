@@ -7,27 +7,30 @@ namespace ProjectBubble.Core
     public class TileBurstManager : MonoBehaviour
     {
         private static TileBurstManager _instance;
-        private HashSet<Vector3Int> _usedTiles;
+        private HashSet<Vector3Int> _usedTiles = new();
         [SerializeField] private TileBurstAnimation _tileBurstAnimationPrefab;
         private void OnEnable()
         {
             _instance = this;
-            _usedTiles = new();
         }
+
         public static void UseTile(Vector3Int tilePosition)
         {
+            tilePosition.z = 0;
             TileBurstManager tileBurstManager = _instance;
             tileBurstManager._usedTiles.Add(tilePosition);
         }
 
         public static void FreeTile(Vector3Int tilePosition)
         {
+            tilePosition.z = 0;
             TileBurstManager tileBurstManager = _instance;
             tileBurstManager._usedTiles.Remove(tilePosition);
         }
 
         public static bool IsUsed(Vector3Int tilePosition)
         {
+            tilePosition.z = 0;
             TileBurstManager tileBurstManager = _instance;
             return tileBurstManager._usedTiles.Contains(tilePosition);
         }

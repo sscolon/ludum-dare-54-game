@@ -66,6 +66,13 @@ namespace ProjectBubble.MainPlayer
                 if (_tauntRoutine != null)
                     StopCoroutine(_tauntRoutine);
                 _tauntRoutine = StartCoroutine(Taunt());
+                int tileCount = 0;
+                foreach (Vector3Int tile in World.Ground.cellBounds.allPositionsWithin)
+                {
+                    if (World.Ground.HasTile(tile))
+                        tileCount++;
+                }
+                DebugWrapper.Log($"Tile Count: {tileCount}");
             }
         }
 
