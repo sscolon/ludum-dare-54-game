@@ -50,6 +50,7 @@ namespace ProjectBubble.MainPlayer
         public event Action<Dictionary<int, int>> OnCollect;
         private void Start()
         {
+            GameManager.Player = gameObject;
             _orbitingBubbles = new();
             _collectibleIndex = new();
             _bubbleQueue = new();

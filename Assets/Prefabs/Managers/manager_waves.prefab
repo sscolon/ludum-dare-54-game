@@ -63,6 +63,7 @@ MonoBehaviour:
   - {x: 10, y: 10}
   _prefabs:
   - {fileID: 5889752795426585444, guid: f6e43d5a8a1bb0d43b159f5afebfecaa, type: 3}
+  - {fileID: 5435446286032264380, guid: ba1d621a7e9779d4cae81fd690537290, type: 3}
   _minBonusShopItemCount: 1
   _maxBonusShopItemCount: 2
   _requiredShopItemPrefabs:

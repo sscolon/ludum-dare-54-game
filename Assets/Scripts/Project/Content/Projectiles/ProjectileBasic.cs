@@ -6,17 +6,6 @@ namespace ProjectBubble.Content.Projectiles
 {
     public class ProjectileBasic : Projectile
     {
-        private SpriteRenderer _spriteRenderer;
-        private SpriteRenderer SpriteRenderer
-        {
-            get
-            {
-                if (_spriteRenderer == null)
-                    _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-                return _spriteRenderer;
-            }
-        }
-
         private void Update()
         {
             CalculateTraveledDistance();
@@ -29,7 +18,6 @@ namespace ProjectBubble.Content.Projectiles
         private void FixedUpdate()
         {
             Body.velocity = Right * _movementSpeed;
-            SpriteRenderer.transform.rotation = Util.GetAngle(Right);
         }
 
         protected override void OnCollision(GameObject gameObject)

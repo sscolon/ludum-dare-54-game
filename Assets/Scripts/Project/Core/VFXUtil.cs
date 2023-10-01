@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections;
 using UnityEngine;
 
 namespace ProjectBubble.Core
@@ -26,6 +21,8 @@ namespace ProjectBubble.Core
             IEnumerator Routine()
             {
                 yield return new WaitForSeconds(0.25f);
+                if (spriteRenderer == null)
+                    yield break;
                 spriteRenderer.material = _instance._spriteDefault;
             }
         }
@@ -37,7 +34,7 @@ namespace ProjectBubble.Core
             {
                 Time.timeScale = 0;
                 var yield = new WaitForEndOfFrame();
-                for(int i = 0; i < frames; i++)
+                for (int i = 0; i < frames; i++)
                 {
                     yield return yield;
                 }

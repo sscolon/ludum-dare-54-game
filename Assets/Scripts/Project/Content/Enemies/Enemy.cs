@@ -8,6 +8,12 @@ namespace ProjectBubble.Content.Enemies
     {
         //Loots
         [SerializeField] private Loot _loot;
+        public override void TakeDamage(float damage)
+        {
+            base.TakeDamage(damage);
+            VFXUtil.DoSpriteFlash(gameObject);
+        }
+
         public override void Death()
         {
             base.Death();

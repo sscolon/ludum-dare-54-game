@@ -26,7 +26,7 @@ namespace ProjectBubble.Core.Combat
             _lastPosition = transform.position;
         }
 
-        private void OnCollisionEnter2D(Collision2D collision)
+        private void OnTriggerEnter2D(Collider2D collision)
         {
             GameObject gameObject = collision.gameObject;
             OnCollision(gameObject);
