@@ -205,6 +205,9 @@ namespace ProjectBubble.Core.Combat
                 //Unsure if I need to add this check but whatever.
                 if (col.gameObject == gameObject)
                     continue;
+                //FUN SYNERGY TIME!
+                if (col.gameObject.CompareTag("Player"))
+                    continue;
                 if (col.gameObject.TryGetComponent(out IDamageable damageable))
                 {
                     damageable.TakeDamage(_bubbleBurstDamage);
@@ -284,7 +287,8 @@ namespace ProjectBubble.Core.Combat
             {
                 Vector3 position = transform.position + bubbledObject.offset;
                 bubbledObject.gameObject.transform.position = position;
-                if (bubbledObject.gameObject.TryGetComponent(out IDamageable damageable))
+
+                if (bubbledObject.gameObject.TryGetComponent(out IDamageable damageable) && !bubbledObject.gameObject.CompareTag("Player"))
                 {
                     damageable.TakeDamage(_bubbleReleaseDamage);
                 }
