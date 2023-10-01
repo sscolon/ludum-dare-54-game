@@ -1,6 +1,7 @@
 ﻿
 using ProjectBubble.Core.Collectibles;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 namespace ProjectBubble.Content.Collectibles
@@ -10,11 +11,13 @@ namespace ProjectBubble.Content.Collectibles
         private int _cost;
         [SerializeField] private int _minCost;
         [SerializeField] private int _maxCost;
+        [SerializeField] private TMP_Text _priceTmp;
 
         protected override void Start()
         {
             base.Start();
             _cost = Random.Range(_minCost, _maxCost);
+            _priceTmp.text = $"{_cost}";
         }
 
         public override bool CanCollect(GameObject gameObject, Dictionary<int, int> collectibleIndex)
