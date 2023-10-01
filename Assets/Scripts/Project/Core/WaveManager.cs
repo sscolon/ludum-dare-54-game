@@ -90,7 +90,7 @@ namespace ProjectBubble.Core
             NextWave();
         }
 
-        private Vector3Int GetRandomSpawnPosition()
+        private Vector3Int GetRandomSpawnPosition(float threshold = 10)
         {
             //TODO: Telegraph it, we'll do this in polishing phase.
             //There'll be a sound effect and particle effect before the enemy spawns.
@@ -99,10 +99,9 @@ namespace ProjectBubble.Core
             Vector3 cameraPos = Util.GetMainCamera().transform.position;
             cameraPos.z = 0.0f;
             Vector3Int cameraTile = Vector3Int.RoundToInt(cameraPos);
-            const float Threshold = 10;
             foreach (var cellPosition in ground.cellBounds.allPositionsWithin)
             {
-                if (ground.HasTile(cellPosition) && Vector3Int.Distance(cellPosition, cameraTile) <= Threshold)
+                if (ground.HasTile(cellPosition) && Vector3Int.Distance(cellPosition, cameraTile) <= threshold)
                 {
                     spawnPositions.Add(cellPosition);
                 }
@@ -129,9 +128,9 @@ namespace ProjectBubble.Core
             }
         }
 
-        public GameObject SpawnPrefab(GameObject prefab)
+        public GameObject SpawnPrefab(GameObject prefab, float threshold = 10)
         {
-            Vector3Int tilePosition = GetRandomSpawnPosition();
+            Vector3Int tilePosition = GetRandomSpawnPosition(threshold);
             Vector3 worldPosition = tilePosition;
             worldPosition += new Vector3(0.5f, 0.5f);
             GameObject instance = GameObject.Instantiate(prefab, worldPosition, prefab.transform.rotation);
@@ -215,14 +214,14 @@ namespace ProjectBubble.Core
                     int bonusShopItemCount = UnityEngine.Random.Range(_minBonusShopItemCount, _maxBonusShopItemCount);
                     for (int r = 0; r < _requiredShopItemPrefabs.Length; r++)
                     {
-                        SpawnPrefab(_requiredShopItemPrefabs[r]);
+                        SpawnPrefab(_requiredShopItemPrefabs[r], 5);
                     }
 
                     for (int s = 0; s < bonusShopItemCount; s++)
                     {
                         int rand = UnityEngine.Random.Range(0, _bonusShopItemPrefabs.Length);
                         GameObject prefab = _bonusShopItemPrefabs[rand];
-                        SpawnPrefab(prefab);
+                        SpawnPrefab(prefab, 5);
                     }
                     OnRestStart?.Invoke();
                 }
