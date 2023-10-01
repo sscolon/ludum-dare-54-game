@@ -465,7 +465,7 @@ MonoBehaviour:
   _health: 5
   _maxHealth: 5
   _starterBubble: {fileID: 11400000, guid: 0ab314f041aae4b49848189807a02dc7, type: 2}
-  _movementSpeed: 7.5
+  _movementSpeed: 7.7
   _acceleration: 8
   _deceleration: 4
   _selfBubbleDelay: 1
