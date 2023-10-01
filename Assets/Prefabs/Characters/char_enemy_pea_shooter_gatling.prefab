@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isRandom: 0
+  _playOnStart: 0
   _screenshake: 0
   _screenshakeStrength: 0
   _screenshakeDuration: 0
@@ -234,7 +235,7 @@ MonoBehaviour:
   _loot: {fileID: 11400000, guid: df2d9dd69b42d61498213650fa845b6e, type: 2}
   _acceleration: 8
   _deceleration: 4
-  _fireDelay: 0.25
+  _fireDelay: 0.33333334
   _projectileCount: 1
   _projectileSpread: 0
   _projectileRandomSpread: 0

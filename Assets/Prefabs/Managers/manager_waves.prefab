@@ -48,8 +48,8 @@ MonoBehaviour:
   _maxWave: 15
   _restWaveDivisor: 5
   _restTime: 12
-  _minEnemySpawnTime: 1.5
-  _maxEnemySpawnTime: 2.5
+  _minEnemySpawnTime: 2
+  _maxEnemySpawnTime: 3
   _enemyCounts:
   - {x: 1, y: 2}
   - {x: 1, y: 2}
@@ -91,6 +91,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isRandom: 0
+  _playOnStart: 0
   _screenshake: 0
   _screenshakeStrength: 0
   _screenshakeDuration: 0

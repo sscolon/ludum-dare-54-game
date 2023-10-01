@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isRandom: 0
+  _playOnStart: 0
   _screenshake: 0
   _screenshakeStrength: 1
   _screenshakeDuration: 0
@@ -153,7 +154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _movementSpeed: 6
-  _bubbleReleaseDamage: 2
+  _bubbleReleaseDamage: 3
   _bubbleBurstDamage: 3
   _screenshotRenderer: {fileID: 8617453011232302501}
   _catchVFX: {fileID: 3856310065882947430}
@@ -538,6 +539,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isRandom: 0
+  _playOnStart: 0
   _screenshake: 1
   _screenshakeStrength: 1
   _screenshakeDuration: 0.25

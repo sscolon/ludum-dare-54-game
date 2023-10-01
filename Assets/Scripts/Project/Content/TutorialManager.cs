@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 using UnityEngine;
 using ProjectBubble.Core;
 using ProjectBubble.Core.Combat;
+using DDCore;
 
 namespace ProjectBubble.Content
 {
     public class TutorialManager : MonoBehaviour
     {
         [SerializeField] private WaveManager _waveManager;
+        [SerializeField] private AudioClip _musicClip;
         [SerializeField] private GameObject _bubbleHereVisual;
         [SerializeField] private GameObject _attackHereVisual;
         [SerializeField] private GameObject _tutorialEnemyPrefab;
@@ -38,6 +40,9 @@ namespace ProjectBubble.Content
             _bubbleHereVisual.gameObject.SetActive(true);
 
             yield return new WaitUntil(() => instance == null || !instance.gameObject.activeSelf);
+
+            _bubbleHereVisual.gameObject.SetActive(false);
+
             GameObject target = _waveManager.SpawnPrefab(_tutorialEnemyPrefab);
             _attackHereVisual.transform.position = target.transform.position;
             _attackHereVisual.gameObject.SetActive(true);
@@ -51,8 +56,10 @@ namespace ProjectBubble.Content
             Entity entity = target.GetComponent<Entity>();
             entity.OnClear += Clear;
             yield return new WaitUntil(() => isDead);
+            _attackHereVisual.gameObject.SetActive(false);
 
             //Begin Game
+            AudioManager.PlayMusic(_musicClip);
             _waveManager?.NextWave();
         }
     }

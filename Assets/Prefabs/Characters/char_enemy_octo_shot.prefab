@@ -343,8 +343,8 @@ MonoBehaviour:
   _minSpawnWave: 10
   _maxSpawnWave: -1
   _spawnWeight: 1
-  _health: 3
-  _maxHealth: 3
+  _health: 6
+  _maxHealth: 6
   _hitVFX: {fileID: 4954138125668481865}
   _loot: {fileID: 11400000, guid: df2d9dd69b42d61498213650fa845b6e, type: 2}
   _acceleration: 8
@@ -1080,6 +1080,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isRandom: 0
+  _playOnStart: 0
   _screenshake: 0
   _screenshakeStrength: 0
   _screenshakeDuration: 0
