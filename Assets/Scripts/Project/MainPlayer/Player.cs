@@ -11,7 +11,8 @@ namespace ProjectBubble.MainPlayer
 {
     [RequireComponent(typeof(Rigidbody2D))]
     public class Player : Entity,
-        ICollector
+        ICollector,
+        IBubbleReceiver
     {
         private Dictionary<int, int> _collectibleIndex;
         private Queue<Bubble> _bubbleQueue;
@@ -27,6 +28,7 @@ namespace ProjectBubble.MainPlayer
         [SerializeField] private float _movementSpeed;
         [SerializeField] private float _acceleration;
         [SerializeField] private float _deceleration;
+        [SerializeField] private float _selfBubbleDelay;
 
         [Header("Scoring")]
         [SerializeField] private float _damagePenalty;
@@ -76,6 +78,20 @@ namespace ProjectBubble.MainPlayer
 
             //Just call it every frame, overlap circle isn't expensive anyway.
             Collect();
+        }
+
+        public void OnBubble(Bubble bubble)
+        {
+           bubble.StartCoroutine(SelfLaunchRoutine());
+            IEnumerator SelfLaunchRoutine()
+            {
+                yield return new WaitForSeconds(_selfBubbleDelay);
+                _bubbleQueue.Dequeue();
+                _orbitingBubbles.Remove(bubble);
+                OnDequeue?.Invoke(bubble);
+
+                bubble.Fire(Bubble.Type.Release, Util.GetMouseWorldPosition());
+            }
         }
 
         private void TogglePause()
@@ -251,5 +267,7 @@ namespace ProjectBubble.MainPlayer
             base.Death();
             GameManager.Lose();
         }
+
+
     }
 }

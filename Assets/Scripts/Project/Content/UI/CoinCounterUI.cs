@@ -7,23 +7,19 @@ namespace ProjectBubble.Content.UI
 {
     public class CoinCounterUI : MonoBehaviour
     {
+        private ICollector _collector;
         [SerializeField] private TMP_Text _tmpCount;
         [SerializeField] private TMP_Text _tmpCountShadow;
         [SerializeField] private GameObject _target;
         private void Start()
         {
-            if (_target.TryGetComponent(out ICollector collector))
-            {
-                collector.OnCollect += UpdateUI;
-            }
+            _collector = _target.GetComponent<ICollector>();
+            _collector.OnCollect += UpdateUI;
         }
 
         private void OnDestroy()
         {
-            if (_target.TryGetComponent(out ICollector collector))
-            {
-                collector.OnCollect -= UpdateUI;
-            }
+            _collector.OnCollect -= UpdateUI;
         }
 
         private void UpdateUI(Dictionary<int, int> collectibleIndex)

@@ -355,7 +355,12 @@ namespace ProjectBubble.Core.Combat
         {
             foreach (var bubbledObject in _bubbledObjects)
             {
+                if (bubbledObject.gameObject.TryGetComponent(out IBubbleReceiver bubbleReceiver))
+                {
+                    bubbleReceiver.OnBubble(this);
+                }
                 bubbledObject.gameObject.SetActive(false);
+
             }
         }
 

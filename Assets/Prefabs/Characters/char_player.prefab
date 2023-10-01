@@ -468,6 +468,7 @@ MonoBehaviour:
   _movementSpeed: 7.5
   _acceleration: 8
   _deceleration: 4
+  _selfBubbleDelay: 1
   _damagePenalty: -30
   _collectRadius: 1
   _idleTransform: {fileID: 2594505912403937918}
