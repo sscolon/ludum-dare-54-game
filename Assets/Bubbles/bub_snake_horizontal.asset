@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: bub_snake_horizontal
   m_EditorClassIdentifier: 
   title: H-Snake Bubble
-  wrapper: {fileID: 0}
+  icon: {fileID: 21300000, guid: 52fc3b667c176da4fb4926d51007555c, type: 3}
   prefab: {fileID: 4983595016182966719, guid: 23c1a48fb3ee4c240ab756bbc7506d71, type: 3}

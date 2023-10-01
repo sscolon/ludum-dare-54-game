@@ -100,6 +100,10 @@ MonoBehaviour:
   _bubblesToSell:
   - {fileID: 11400000, guid: 0ab314f041aae4b49848189807a02dc7, type: 2}
   - {fileID: 11400000, guid: 4c7ccae00a07aff4ca2d6a02340c3935, type: 2}
+  - {fileID: 11400000, guid: cf9435c09c76aad4fa5d424de18401c8, type: 2}
+  - {fileID: 11400000, guid: 7b791aa3dcc479d4896265888eec1c44, type: 2}
+  - {fileID: 11400000, guid: 733a2f393128ee34abcf7a7faa1841c0, type: 2}
+  - {fileID: 11400000, guid: a8569c0b32f068946b598de4f9d8e22f, type: 2}
 --- !u!1 &440595349909538964
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: bub_rectangle_horizontal
   m_EditorClassIdentifier: 
   title: H-Rectangular Bubble
-  wrapper: {fileID: 0}
+  icon: {fileID: 21300000, guid: 1d09cfc39125d774da169048c9e2f3e0, type: 3}
   prefab: {fileID: 2536762424758182205, guid: 1afbda57449e177469dc8ab10ab0e37a, type: 3}
