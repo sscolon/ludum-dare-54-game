@@ -72,7 +72,7 @@ MonoBehaviour:
   - {fileID: 4820107282780119531, guid: 1adb52ab124bcc241b002acb76b43677, type: 3}
   _spawnVFX: {fileID: 8512694557057705789}
   _minBonusShopItemCount: 1
-  _maxBonusShopItemCount: 2
+  _maxBonusShopItemCount: 4
   _requiredShopItemPrefabs:
   - {fileID: 91308471390323184, guid: f5b61d618e598ab469924328173880c7, type: 3}
   _bonusShopItemPrefabs:
