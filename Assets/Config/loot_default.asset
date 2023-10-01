@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: loot_default
   m_EditorClassIdentifier: 
   _minCount: 1
-  _maxCount: 7
+  _maxCount: 11
   _prefabs:
   - prefab: {fileID: 0}
     weight: 1
