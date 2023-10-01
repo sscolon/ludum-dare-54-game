@@ -90,7 +90,7 @@ namespace ProjectBubble.Core
             NextWave();
         }
 
-        private Vector3Int GetRandomSpawnPosition(float minDistance = 10, float maxDistance = 10)
+        private Vector3Int GetRandomSpawnPosition(float minDistance = 0, float maxDistance = float.MaxValue)
         {
             //TODO: Telegraph it, we'll do this in polishing phase.
             //There'll be a sound effect and particle effect before the enemy spawns.
@@ -129,7 +129,7 @@ namespace ProjectBubble.Core
             }
         }
 
-        public GameObject SpawnPrefab(GameObject prefab, float minDistance = 10, float maxDistance = 10)
+        public GameObject SpawnPrefab(GameObject prefab, float minDistance = 0, float maxDistance = float.MaxValue)
         {
             Vector3Int tilePosition = GetRandomSpawnPosition(minDistance, maxDistance);
             Vector3 worldPosition = tilePosition;
@@ -215,14 +215,14 @@ namespace ProjectBubble.Core
                     int bonusShopItemCount = UnityEngine.Random.Range(_minBonusShopItemCount, _maxBonusShopItemCount);
                     for (int r = 0; r < _requiredShopItemPrefabs.Length; r++)
                     {
-                        SpawnPrefab(_requiredShopItemPrefabs[r], 5);
+                        SpawnPrefab(_requiredShopItemPrefabs[r], 4);
                     }
 
                     for (int s = 0; s < bonusShopItemCount; s++)
                     {
                         int rand = UnityEngine.Random.Range(0, _bonusShopItemPrefabs.Length);
                         GameObject prefab = _bonusShopItemPrefabs[rand];
-                        SpawnPrefab(prefab, 5);
+                        SpawnPrefab(prefab, 4);
                     }
                     OnRestStart?.Invoke();
                 }

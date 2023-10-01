@@ -96,7 +96,7 @@ MonoBehaviour:
   _minCost: 10
   _maxCost: 50
   _priceTmp: {fileID: 5968685643301779302}
-  _spriteRenderer: {fileID: 4999568649720226024}
+  _icon: {fileID: 3013416057045721661}
   _bubblesToSell:
   - {fileID: 11400000, guid: 0ab314f041aae4b49848189807a02dc7, type: 2}
   - {fileID: 11400000, guid: 4c7ccae00a07aff4ca2d6a02340c3935, type: 2}

@@ -28,6 +28,8 @@ namespace ProjectBubble.Content.UI
 
         private void OnDestroy()
         {
+            if (_target == null)
+                return;
             if (_target.TryGetComponent(out Entity entity))
             {
                 entity.OnHealthValueChanged -= UpdateUI;

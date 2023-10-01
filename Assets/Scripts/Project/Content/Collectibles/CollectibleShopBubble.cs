@@ -8,14 +8,14 @@ namespace ProjectBubble.Content.Collectibles
     public class CollectibleShopBubble : CollectibleShopItem
     {
         private BubbleData _bubbleToSell;
-        [SerializeField] private SpriteRenderer _spriteRenderer;
+        [SerializeField] private SpriteRenderer _icon;
         [SerializeField] private BubbleData[] _bubblesToSell;
         protected override void Start()
         {
             base.Start();
             int randIndex = Random.Range(0, _bubblesToSell.Length);
             _bubbleToSell = _bubblesToSell[randIndex];
-            _spriteRenderer.sprite = _bubbleToSell.icon;
+            _icon.sprite = _bubbleToSell.icon;
         }
 
         public override void Collect(GameObject gameObject, Dictionary<int, int> collectibleIndex)
