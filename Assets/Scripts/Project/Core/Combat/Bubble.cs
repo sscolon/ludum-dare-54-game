@@ -180,7 +180,7 @@ namespace ProjectBubble.Core.Combat
             _travelTime = 0f;
             MoveType = Movement.Return;
 
-            ReleaseBurst();
+            ReleaseBurst();         
             ReleaseBubbledTiles();
             ReleaseBubbledObjects();
 
@@ -212,17 +212,25 @@ namespace ProjectBubble.Core.Combat
             }
         }
 
+        private void ReleaseTile(Vector3Int tilePosition, TileBase tile)
+        {
+            World.Ground.SetTile(tilePosition, tile);
+            World.Undercliff.SetTile(tilePosition + Vector3Int.down, World.UndercliffTile);
+            TileBurstManager.FreeTile(tilePosition);
+        }
+
         private void ReleaseBubbledTiles()
         {
             Tilemap tilemap = World.Ground;
             Vector3Int position = new(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y), 0);
+
             foreach (BubbledTile bubbledTile in _bubbledTiles)
             {
                 Vector3Int tilePosition = position + bubbledTile.offset;
                 Vector3Int startTilePosition = tilePosition;
 
                 //I'm, just gonna get the nearest tiles lol
-                const int SEARCH_RANGE = 10;
+                const int SEARCH_RANGE = 13;
                 if (tilemap.HasTile(tilePosition))
                 {
                     List<Vector3Int> availablePositions = new List<Vector3Int>();
@@ -231,7 +239,8 @@ namespace ProjectBubble.Core.Combat
                         for (int y = -SEARCH_RANGE; y < SEARCH_RANGE; y++)
                         {
                             Vector3Int offset = new Vector3Int(x, y, 0);
-                            if (!tilemap.HasTile(tilePosition + offset))
+                            Vector3Int proposedTilePosition = tilePosition + offset;
+                            if (!tilemap.HasTile(proposedTilePosition) && !TileBurstManager.IsUsed(proposedTilePosition))
                             {
                                 availablePositions.Add(tilePosition + offset);
                             }
@@ -242,8 +251,10 @@ namespace ProjectBubble.Core.Combat
                     tilePosition = availablePositions[0];
                 }
 
-                tilemap.SetTile(tilePosition, bubbledTile.tile);
-                World.Undercliff.SetTile(tilePosition + Vector3Int.down, World.UndercliffTile);
+                TileBase tile = bubbledTile.tile;
+                TileBurstManager.Burst(transform.position, new Vector3(tilePosition.x + 0.5f, tilePosition.y + 0.5f, 0), 
+                    () => ReleaseTile(tilePosition, tile));
+                TileBurstManager.UseTile(tilePosition);
             }
 
             _bubbledTiles.Clear();
@@ -272,11 +283,15 @@ namespace ProjectBubble.Core.Combat
             Vector3Int position = new Vector3Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y), 0);
             foreach (Vector3Int tilePosition in tilemap.cellBounds.allPositionsWithin)
             {
+                if (!tilemap.HasTile(tilePosition))
+                    continue;
+                TileBase tile = tilemap.GetTile(tilePosition);
+                if (tile == null)
+                    continue;
                 Vector2 worldPosition = new Vector2(tilePosition.x, tilePosition.y);
                 Vector2 worldPositionCenter = worldPosition + new Vector2(0.5f, 0.5f);
-                if (tilemap.HasTile(tilePosition) && (_collider2D.OverlapPoint(worldPosition) || _collider2D.OverlapPoint(worldPositionCenter)))
+                if (_collider2D.OverlapPoint(worldPosition) || _collider2D.OverlapPoint(worldPositionCenter))
                 {
-                    TileBase tile = tilemap.GetTile(tilePosition);
                     Vector3Int offset = tilePosition - position;
                     BubbledTile bubbledTile = new BubbledTile(tile, tilePosition, offset);
                     _bubbledTiles.Add(bubbledTile);
