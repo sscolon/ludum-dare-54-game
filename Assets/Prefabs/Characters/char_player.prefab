@@ -109,6 +109,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isRandom: 0
+  _playOnStart: 0
   _screenshake: 1
   _screenshakeStrength: 1
   _screenshakeDuration: 0.25
@@ -500,7 +501,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.25
+  m_Radius: 0.2
 --- !u!114 &9050887648383927166
 MonoBehaviour:
   m_ObjectHideFlags: 0
